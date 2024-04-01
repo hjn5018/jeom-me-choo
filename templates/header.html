@@ -18,69 +18,95 @@
 </header>
 
 <!-- 로그인 modal -->
-<div class="modal fade" tabindex="-1" role="dialog"
-     id="modalLogin">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-4 shadow">
-            <div class="modal-header p-5 pb-4 border-bottom-0">
-                <h1 class="fw-bold mb-0 fs-2">로그인</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+<form id="frm_login" action="" method="post">
+    <div class="modal fade" tabindex="-1" role="dialog"
+         id="modalLogin">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header p-5 pb-4 border-bottom-0">
+                    <h1 class="fw-bold mb-0 fs-2">로그인</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-            <div class="modal-body p-5 pt-0">
-                <form class="">
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control rounded-3" id="floatingInput"
-                               placeholder="ID">
-                        <label for="floatingInput">ID</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control rounded-3" id="floatingPassword"
-                               placeholder="Password">
-                        <label for="floatingPassword">Password</label>
-                    </div>
-                    <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">로그인</button>
-                </form>
+                <div class="modal-body p-5 pt-0">
+                    <form class="">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-3" id="floatingInput"
+                                   placeholder="ID">
+                            <label for="floatingInput">ID</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control rounded-3" id="floatingPassword"
+                                   placeholder="Password">
+                            <label for="floatingPassword">Password</label>
+                        </div>
+                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">로그인</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
 
+<form id="frm_join" action="{{ url_for('join_member') }}" method="post">
 <!-- 회원가입 modal -->
-<div class="modal fade" tabindex="-1" role="dialog"
-     id="modalJoin">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-4 shadow">
-            <div class="modal-header p-5 pb-4 border-bottom-0">
-                <h1 class="fw-bold mb-0 fs-2">회원가입</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+    <div class="modal fade" tabindex="-1" role="dialog"
+         id="modalJoin">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header p-5 pb-4 border-bottom-0">
+                    <h1 class="fw-bold mb-0 fs-2">회원가입</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-            <div class="modal-body p-5 pt-0">
-                <form class="">
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control rounded-3"
-                               placeholder="ID">
-                        <label for="floatingInput">ID</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control rounded-3"
-                               placeholder="Password">
-                        <label for="floatingPassword">Password</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control rounded-3"
-                               placeholder="name">
-                        <label for="floatingInput">이름</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control rounded-3"
-                               placeholder="NickName">
-                        <label for="floatingInput">NickName</label>
-                    </div>
-                    <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">회원가입</button>
-                </form>
+                <div class="modal-body p-5 pt-0">
+                    <form class="">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-3" id="member_login_id" name="member_login_id"
+                                   placeholder="ID">
+                            <label for="member_login_id">ID</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control rounded-3" id="password" name="password"
+                                   placeholder="Password">
+                            <label for="password">Password</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-3" id="member_name" name="member_name"
+                                   placeholder="name">
+                            <label for="member_name">이름</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-3" id="member_nickname" name="member_nickname"
+                                   placeholder="member_nickname">
+                            <label for="floatingInput">NickName</label>
+                        </div>
+                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="fn_join()">회원가입</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
+
+<script>
+    function fn_join() {
+
+        $.ajax({
+            type : "POST",
+            url : "/check_member_id",
+            data : $("#frm_join").serialize(),
+            dataType : "JSON",
+            success : function (result) {
+                if(result) {
+                    alert("중복된 아이디가 존재합니다!");
+                }else {
+                    document.getElementById("frm_join").submit();
+                }
+            },
+            error : function (result) {
+                alert(result)
+            }
+        })
+    }
+</script>
