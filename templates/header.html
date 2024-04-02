@@ -21,79 +21,79 @@
         </div>
       </div>
     </div>
+
+    <!-- 로그인 modal -->
+    <form id="frm_login" action="{{ url_for('member_login') }}" method="post">
+        <div class="modal fade" tabindex="-1" role="dialog"
+             id="modalLogin">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header p-5 pb-4 border-bottom-0">
+                        <h1 class="fw-bold mb-0 fs-2">로그인</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-5 pt-0">
+                        <form class="">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control rounded-3" id="login_id" name="member_login_id"
+                                       placeholder="ID">
+                                <label for="login_id">ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control rounded-3" id="passwd" name="password"
+                                       placeholder="Password">
+                                <label for="passwd">Password</label>
+                            </div>
+                            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="fn_login()">로그인</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form id="frm_join" action="{{ url_for('member_add') }}" method="post">
+    <!-- 회원가입 modal -->
+        <div class="modal fade" tabindex="-1" role="dialog"
+             id="modalJoin">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header p-5 pb-4 border-bottom-0">
+                        <h1 class="fw-bold mb-0 fs-2">회원가입</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-5 pt-0">
+                        <form class="">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control rounded-3 required" id="member_login_id"
+                                       name="member_login_id" placeholder="ID">
+                                <label for="member_login_id">ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control rounded-3 required" id="password"
+                                       name="password" placeholder="Password">
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control rounded-3 required" id="member_name"
+                                       name="member_name" placeholder="Name">
+                                <label for="member_name">Name</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control rounded-3 required" id="member_nickname"
+                                       name="member_nickname" placeholder="member_nickname">
+                                <label for="member_nickname">NickName</label>
+                            </div>
+                            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="fn_join()">회원가입</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </header>
-
-<!-- 로그인 modal -->
-<form id="frm_login" action="{{ url_for('member_login') }}" method="post">
-    <div class="modal fade" tabindex="-1" role="dialog"
-         id="modalLogin">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header p-5 pb-4 border-bottom-0">
-                    <h1 class="fw-bold mb-0 fs-2">로그인</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body p-5 pt-0">
-                    <form class="">
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-3" id="login_id" name="member_login_id"
-                                   placeholder="ID">
-                            <label for="login_id">ID</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" class="form-control rounded-3" id="passwd" name="password"
-                                   placeholder="Password">
-                            <label for="passwd">Password</label>
-                        </div>
-                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="fn_login()">로그인</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
-
-<form id="frm_join" action="{{ url_for('member_add') }}" method="post">
-<!-- 회원가입 modal -->
-    <div class="modal fade" tabindex="-1" role="dialog"
-         id="modalJoin">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header p-5 pb-4 border-bottom-0">
-                    <h1 class="fw-bold mb-0 fs-2">회원가입</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body p-5 pt-0">
-                    <form class="">
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-3 required" id="member_login_id"
-                                   name="member_login_id" placeholder="ID">
-                            <label for="member_login_id">ID</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" class="form-control rounded-3 required" id="password"
-                                   name="password" placeholder="Password">
-                            <label for="password">Password</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-3 required" id="member_name"
-                                   name="member_name" placeholder="Name">
-                            <label for="member_name">Name</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-3 required" id="member_nickname"
-                                   name="member_nickname" placeholder="member_nickname">
-                            <label for="member_nickname">NickName</label>
-                        </div>
-                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="fn_join()">회원가입</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
 
 <script>
     // 회원가입 함수
