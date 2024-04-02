@@ -45,7 +45,7 @@ def home():
 
 
 # 회원가입
-@app.route('/join_member', methods=['POST'])
+@app.route('/member_add', methods=['POST'])
 def join_member():
     member_login_id = request.form['member_login_id']
     password = request.form['password']
@@ -61,7 +61,7 @@ def join_member():
 
 
 # 아이디 중복 체크
-@app.route('/check_member_id', methods=['POST'])
+@app.route('/member_id_check', methods=['POST'])
 def check_member_id():
     member_login_id = request.form['member_login_id']
     if Member.query.filter_by(member_login_id=member_login_id).count():
@@ -71,7 +71,7 @@ def check_member_id():
 
 
 # 로그인
-@app.route('/login_member', methods=['POST'])
+@app.route('/member_login', methods=['POST'])
 def login_member():
     member_login_id = request.form['member_login_id']
     password = request.form['password']
@@ -90,7 +90,7 @@ def login_member():
 
 
 # 로그아웃
-@app.route('/logout_member', methods=['GET'])
+@app.route('/member_logout', methods=['GET'])
 def logout_member():
     del session["member"]
     return render_template("message.html", message="로그아웃 완료했습니다."

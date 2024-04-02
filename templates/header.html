@@ -24,7 +24,7 @@
 </header>
 
 <!-- 로그인 modal -->
-<form id="frm_login" action="{{ url_for('login_member') }}" method="post">
+<form id="frm_login" action="{{ url_for('member_login') }}" method="post">
     <div class="modal fade" tabindex="-1" role="dialog"
          id="modalLogin">
         <div class="modal-dialog" role="document">
@@ -54,7 +54,7 @@
     </div>
 </form>
 
-<form id="frm_join" action="{{ url_for('join_member') }}" method="post">
+<form id="frm_join" action="{{ url_for('member_add') }}" method="post">
 <!-- 회원가입 modal -->
     <div class="modal fade" tabindex="-1" role="dialog"
          id="modalJoin">
@@ -111,7 +111,7 @@
             // 중복 체크 후 회원가입
             $.ajax({
                 type : "POST",
-                url : "/check_member_id",
+                url : "/member_id_check",
                 data : $("#frm_join").serialize(),
                 dataType : "JSON",
                 success : function (result) {
@@ -143,6 +143,6 @@
 
     // 로그아웃 함수
     function fn_logout() {
-        location.href = "/logout_member";
+        location.href = "/member_logout";
     }
 </script>
