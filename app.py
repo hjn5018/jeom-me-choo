@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 import hashlib
+from pytz import timezone
+from datetime import datetime
+
+korea_timezone = timezone('Asia/Seoul')
+
 app = Flask(__name__)
 
 # DB 기본코드
@@ -27,9 +32,33 @@ class Member(db.Model):
     # 권한
     member_role = db.Column(db.String(), nullable=False, default='member')
 
-    def __repr__(self):
+def __repr__(self):
         return (f'{self.member_id} | {self.member_login_id} | {self.password} | {self.member_name} '
                 f'| {self.member_nickname} | {self.member_role}')
+
+
+# 게시글 테이블 생성
+class Post(db.Model):
+    # 게시글 ID
+    post_id = db.Column(db.Integer, primary_key=True)
+    # member_id
+    member_id = db.Column(db.Integer, db.ForeignKey('member.member_id'), nullable=False)
+    # 글 제목
+    title = db.Column(db.String(), nullable=False)
+    # 글 내용
+    content = db.Column(db.Text, nullable=False)
+    # 조회수
+    views = db.Column(db.Integer, nullable=False, default=0)
+    # 좋아요 수
+    likes = db.Column(db.Integer, nullable=False, default=0)
+    # 비밀글 여부
+    is_private = db.Column(db.Boolean, default=False)
+    # 등록일
+    registration_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
+
+def __repr__(self):
+    return (f'{self.post_id} | {self.member_id} | {self.title} | {self.content} '
+            f'| {self.views} | {self.likes} | {self.is_private}')
 
 
 with app.app_context():
