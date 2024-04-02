@@ -33,9 +33,10 @@ class Member(db.Model):
     # 권한
     member_role = db.Column(db.String(), nullable=False, default='member')
 
+
 def __repr__(self):
-        return (f'{self.member_id} | {self.member_login_id} | {self.password} | {self.member_name} '
-                f'| {self.member_nickname} | {self.member_role}')
+    return (f'{self.member_id} | {self.member_login_id} | {self.password} | {self.member_name} '
+            f'| {self.member_nickname} | {self.member_role}')
 
 
 # 게시글 테이블 생성
@@ -43,7 +44,8 @@ class Post(db.Model):
     # 게시글 ID
     post_id = db.Column(db.Integer, primary_key=True)
     # member_id
-    member_id = db.Column(db.Integer, db.ForeignKey('member.member_id'), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey(
+        'member.member_id'), nullable=False)
     # 글 제목
     title = db.Column(db.String(), nullable=False)
     # 글 내용
@@ -55,7 +57,9 @@ class Post(db.Model):
     # 비밀글 여부
     is_private = db.Column(db.Boolean, default=False)
     # 등록일
-    registration_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
+    registration_date = db.Column(
+        db.DateTime, default=datetime.now(korea_timezone))
+
 
 def __repr__(self):
     return (f'{self.post_id} | {self.member_id} | {self.title} | {self.content} '
@@ -67,13 +71,16 @@ class Comment(db.Model):
     # comment_id
     comment_id = db.Column(db.Integer, primary_key=True)
     # post_id
-    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable=False)
+    # ForeignKey 테스트하느라 default값 넣어둠. 삭제해야됨
+    post_id = db.Column(db.Integer, db.ForeignKey(
+        'post.post_id'), nullable=False, default = 1)
     # member_id
-    member_id = db.Column(db.Integer, db.ForeignKey('member.member_id'), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey(
+        'member.member_id'), nullable=False, default = 1)
     # 댓글 내용
     comment_body = db.Column(db.String(), nullable=False)
     # 비밀 여부
-    is_secret = db.Column(db.Boolean, nullable=False, default=False)
+    is_secret = db.Column(db.String())
     # 등록일
     comment_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
 
@@ -101,8 +108,8 @@ def join_member():
     member_name = request.form['member_name']
     member_nickname = request.form['member_nickname']
 
-    member = Member(member_login_id=member_login_id, password=hashlib.sha256(password.encode("UTF-8")).hexdigest()
-                    , member_name=member_name, member_nickname=member_nickname)
+    member = Member(member_login_id=member_login_id, password=hashlib.sha256(password.encode(
+        "UTF-8")).hexdigest(), member_name=member_name, member_nickname=member_nickname)
     db.session.add(member)
     db.session.commit()
 
@@ -132,8 +139,7 @@ def login_member():
             "member_name": member.first().member_name,
             "member_nickname": member.first().member_nickname
         }
-        return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다."
-                               , return_url="/")
+        return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다.", return_url="/")
     else:
         return render_template("message.html", message="회원정보를 찾을 수 없습니다.", return_url="/")
 
@@ -142,9 +148,18 @@ def login_member():
 @app.route('/logout_member', methods=['GET'])
 def logout_member():
     del session["member"]
-    return render_template("message.html", message="로그아웃 완료했습니다."
-                           , return_url="/")
+    return render_template("message.html", message="로그아웃 완료했습니다.", return_url="/")
+
+# 댓글 테스트 페이지
+@app.route('/comment', methods=['POST'])
+def comment():
+    comment_body_receive = request.form["comment_body"]
+    is_secret_receive = request.form.get("is_secret", "No")
+    comment = Comment(comment_body=comment_body_receive, is_secret=is_secret_receive)
+    db.session.add(comment)
+    db.session.commit()
+    return render_template("comment.html")
 
 
-if __name__ == '__main__':  
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
