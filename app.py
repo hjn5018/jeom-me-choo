@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 import os
 import hashlib
@@ -8,6 +8,7 @@ from datetime import datetime
 korea_timezone = timezone('Asia/Seoul')
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 # DB 기본코드
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -22,7 +23,7 @@ class Member(db.Model):
     # member_id
     member_id = db.Column(db.Integer, primary_key=True)
     # 로그인 ID
-    member_login_id = db.Column(db.String(), nullable=False)
+    member_login_id = db.Column(db.String(), nullable=False, unique=True)
     # 비밀번호
     password = db.Column(db.String(), nullable=False)
     # 이름
@@ -88,7 +89,8 @@ with app.app_context():
 # 메인 페이지
 @app.route('/')
 def home():
-    return render_template("index.html")
+    print(session.get("member"))
+    return render_template("index.html", member=session.get("member"))
 
 
 # 회원가입
@@ -101,34 +103,54 @@ def join_member():
 
     member = Member(member_login_id=member_login_id, password=hashlib.sha256(password.encode("UTF-8")).hexdigest()
                     , member_name=member_name, member_nickname=member_nickname)
-    print(member)
     db.session.add(member)
     db.session.commit()
 
-    return redirect(url_for("home"))
+    return render_template("message.html", message="정상적으로 등록되었습니다.", return_url="/")
 
 
 # 아이디 중복 체크
 @app.route('/check_member_id', methods=['POST'])
 def check_member_id():
     member_login_id = request.form['member_login_id']
-    print(member_login_id)
     if Member.query.filter_by(member_login_id=member_login_id).count():
         return jsonify(True)
     else:
         return jsonify(False)
 
 
-# 알림 메세지
-@app.route('/redirect_message')
-def redirect_message():
-    return redirect(url_for('home'))
+# 로그인
+@app.route('/login_member', methods=['POST'])
+def login_member():
+    member_login_id = request.form['member_login_id']
+    password = request.form['password']
+    member = Member.query.filter_by(member_login_id=member_login_id,
+                                    password=hashlib.sha256(password.encode("UTF-8")).hexdigest())
+    if member.count():
+        session["member"] = {
+            "member_login_id": member.first().member_login_id,
+            "member_name": member.first().member_name,
+            "member_nickname": member.first().member_nickname
+        }
+        return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다."
+                               , return_url="/")
+    else:
+        return render_template("message.html", message="회원정보를 찾을 수 없습니다.", return_url="/")
+
+
+# 로그아웃
+@app.route('/logout_member', methods=['GET'])
+def logout_member():
+    del session["member"]
+    return render_template("message.html", message="로그아웃 완료했습니다."
+                           , return_url="/")
 
 
 # 게시판 목록
 @app.route('/list_post')
 def list_post():
-    return render_template("post_list.html")
+    print(session.get("member"))
+    return render_template("post_list.html",member=session.get("member"))
 
 if __name__ == '__main__':  
     app.run(host='0.0.0.0', port=5001, debug=True)
