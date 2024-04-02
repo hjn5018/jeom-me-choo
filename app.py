@@ -94,8 +94,8 @@ def home():
 
 
 # 회원가입
-@app.route('/join_member', methods=['POST'])
-def join_member():
+@app.route('/member_add', methods=['POST'])
+def member_add():
     member_login_id = request.form['member_login_id']
     password = request.form['password']
     member_name = request.form['member_name']
@@ -110,8 +110,8 @@ def join_member():
 
 
 # 아이디 중복 체크
-@app.route('/check_member_id', methods=['POST'])
-def check_member_id():
+@app.route('/member_id_check', methods=['POST'])
+def member_id_check():
     member_login_id = request.form['member_login_id']
     if Member.query.filter_by(member_login_id=member_login_id).count():
         return jsonify(True)
@@ -140,8 +140,8 @@ def login_member():
 
 
 # 로그아웃
-@app.route('/logout_member', methods=['GET'])
-def logout_member():
+@app.route('/member_logout', methods=['GET'])
+def member_logout():
     del session["member"]
     return render_template("message.html", message="로그아웃 완료했습니다."
                            , return_url="/")
@@ -153,6 +153,11 @@ def post_list():
     print(session.get("member"))
     return render_template("post_list.html", member=session.get("member"))
 
+# 환호님 버전
+# @app.route('/list_post')
+# def list_post():
+#     print(session.get("member"))
+#     return render_template("post_list.html",member=session.get("member"))
 
 # 게시글 페이지
 @app.route("/post_instance")
