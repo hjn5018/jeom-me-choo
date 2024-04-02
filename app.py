@@ -149,7 +149,9 @@ def member_logout():
 # 게시판 목록
 @app.route('/list_post')
 def list_post():
-    return render_template("post_list.html")
+    print(session.get("member"))
+    return render_template("post_list.html",member=session.get("member"))
+
 
 if __name__ == '__main__':  
     app.run(host='0.0.0.0', port=5001, debug=True)
