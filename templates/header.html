@@ -6,7 +6,7 @@
         </a>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="#" class="nav-link px-2 text-white">점메추</a></li>
+          <li><a href="/post_list" class="nav-link px-2 text-white">점메추</a></li>
         </ul>
 
         <div class="text-end">
@@ -16,7 +16,7 @@
                 <button type="button" class="btn btn-secondary btn-sm" onclick="fn_logout()">로그아웃</button>
             {% else %}
                 <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#modalLogin">로그인</button>
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalJoin">회원가입</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalJoin">회원가입</button>
             {% endif %}
         </div>
       </div>
@@ -25,6 +25,7 @@
 
 <!-- 로그인 modal -->
 <form id="frm_login" action="{{ url_for('login_member') }}" method="post">
+    <input type="hidden" value="{{ request.path }}" name="prev_url">
     <div class="modal fade" tabindex="-1" role="dialog"
          id="modalLogin">
         <div class="modal-dialog" role="document">
