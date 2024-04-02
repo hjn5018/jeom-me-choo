@@ -125,5 +125,10 @@ def redirect_message():
     return redirect(url_for('home'))
 
 
+# 게시판 목록
+@app.route('/list_post')
+def list_post():
+    return render_template("post_list.html")
+
 if __name__ == '__main__':  
     app.run(host='0.0.0.0', port=5001, debug=True)
