@@ -1,31 +1,33 @@
 <header class="p-3 text-bg-dark">
     <div class="container">
-      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-          <img src="/static/img.png" alt="로고" style="width: 50px">
-        </a>
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <img src="/static/img.png" alt="로고" style="width: 50px">
+            </a>
 
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="/list_post" class="nav-link px-2 text-white">점메추</a></li>
-        </ul>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="/post_list" class="nav-link px-2 text-white">점메추</a></li>
+            </ul>
 
-        <div class="text-end">
-            {% if member %}
+            <div class="text-end">
+                {% if member %}
                 <img src="/static/img.png" alt="로고" style="width: 30px">
                 {{ member.member_name }}님
                 <button type="button" class="btn btn-secondary btn-sm" onclick="fn_logout()">로그아웃</button>
-            {% else %}
-                <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#modalLogin">로그인</button>
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalJoin">회원가입</button>
-            {% endif %}
+                {% else %}
+                <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal"
+                    data-bs-target="#modalLogin">로그인</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#modalJoin">회원가입</button>
+                {% endif %}
+            </div>
         </div>
-      </div>
     </div>
 
     <!-- 로그인 modal -->
-    <form id="frm_login" action="{{ url_for('member_login') }}" method="post">
-        <div class="modal fade" tabindex="-1" role="dialog"
-             id="modalLogin">
+    <form id="frm_login" action="{{ url_for('login_member') }}" method="post">
+        <input type="hidden" value="{{ request.path }}" name="prev_url">
+        <div class="modal fade" tabindex="-1" role="dialog" id="modalLogin">
             <div class="modal-dialog" role="document">
                 <div class="modal-content rounded-4 shadow">
                     <div class="modal-header p-5 pb-4 border-bottom-0">
@@ -37,15 +39,16 @@
                         <form class="">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control rounded-3" id="login_id" name="member_login_id"
-                                       placeholder="ID">
+                                    placeholder="ID">
                                 <label for="login_id">ID</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control rounded-3" id="passwd" name="password"
-                                       placeholder="Password">
+                                    placeholder="Password">
                                 <label for="passwd">Password</label>
                             </div>
-                            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="fn_login()">로그인</button>
+                            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button"
+                                onclick="fn_login()">로그인</button>
                         </form>
                     </div>
                 </div>
@@ -53,10 +56,9 @@
         </div>
     </form>
 
-    <form id="frm_join" action="{{ url_for('member_add') }}" method="post">
-    <!-- 회원가입 modal -->
-        <div class="modal fade" tabindex="-1" role="dialog"
-             id="modalJoin">
+    <form id="frm_join" action="{{ url_for('join_member') }}" method="post">
+        <!-- 회원가입 modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="modalJoin">
             <div class="modal-dialog" role="document">
                 <div class="modal-content rounded-4 shadow">
                     <div class="modal-header p-5 pb-4 border-bottom-0">
@@ -68,25 +70,26 @@
                         <form class="">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control rounded-3 required" id="member_login_id"
-                                       name="member_login_id" placeholder="ID">
+                                    name="member_login_id" placeholder="ID">
                                 <label for="member_login_id">ID</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control rounded-3 required" id="password"
-                                       name="password" placeholder="Password">
+                                    name="password" placeholder="Password">
                                 <label for="password">Password</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control rounded-3 required" id="member_name"
-                                       name="member_name" placeholder="Name">
+                                    name="member_name" placeholder="Name">
                                 <label for="member_name">Name</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control rounded-3 required" id="member_nickname"
-                                       name="member_nickname" placeholder="member_nickname">
+                                    name="member_nickname" placeholder="member_nickname">
                                 <label for="member_nickname">NickName</label>
                             </div>
-                            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="fn_join()">회원가입</button>
+                            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button"
+                                onclick="fn_join()">회원가입</button>
                         </form>
                     </div>
                 </div>
@@ -101,23 +104,23 @@
         // 필수 값 valdation
         let message = "";
         $("#frm_join .required").each(function () {
-            if(!$(this).val()) {
-                message += $(this).attr("placeholder")+"은 필수 입력값입니다.\n";
+            if (!$(this).val()) {
+                message += $(this).attr("placeholder") + "은 필수 입력값입니다.\n";
             }
         })
-        if(message) {
+        if (message) {
             alert(message);
-        }else {
+        } else {
             // 중복 체크 후 회원가입
             $.ajax({
-                type : "POST",
-                url : "/member_id_check",
-                data : $("#frm_join").serialize(),
-                dataType : "JSON",
-                success : function (result) {
-                    if(result) {
+                type: "POST",
+                url: "/member_id_check",
+                data: $("#frm_join").serialize(),
+                dataType: "JSON",
+                success: function (result) {
+                    if (result) {
                         alert("중복된 아이디가 존재합니다!");
-                    }else {
+                    } else {
                         document.getElementById("frm_join").submit();
                     }
                 }
@@ -130,13 +133,13 @@
         // 필수 값 valdation
         let message = "";
         $("#frm_login .required").each(function () {
-            if(!$(this).val()) {
-                message += $(this).attr("placeholder")+"은 필수 입력값입니다.\n";
+            if (!$(this).val()) {
+                message += $(this).attr("placeholder") + "은 필수 입력값입니다.\n";
             }
         })
-        if(message) {
+        if (message) {
             alert(message);
-        }else {
+        } else {
             document.getElementById("frm_login").submit();
         }
     }
