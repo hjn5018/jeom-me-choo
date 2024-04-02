@@ -61,6 +61,26 @@ def __repr__(self):
             f'| {self.views} | {self.likes} | {self.is_private}')
 
 
+# Comment 테이블 생성
+class Comment(db.Model):
+    # comment_id
+    comment_id = db.Column(db.Integer, primary_key=True)
+    # post_id
+    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable=False)
+    # member_id
+    member_id = db.Column(db.Integer, db.ForeignKey('member.member_id'), nullable=False)
+    # 댓글 내용
+    comment_body = db.Column(db.String(), nullable=False)
+    # 비밀 여부
+    is_secret = db.Column(db.Boolean, nullable=False, default=False)
+    # 등록일
+    comment_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
+
+    def __repr__(self):
+        return (f'{self.comment_id} | {self.post_id} | {self.member_id} | {self.comment_body} '
+                f'| {self.is_secret} | {self.comment_date}')
+
+
 with app.app_context():
     db.create_all()
 
