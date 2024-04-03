@@ -121,7 +121,6 @@
                 <li>{{ comment.comment_date }}</li>
                 {% endfor %}
             </ul>
-
             <!-- 댓글 입력 -->
             <form action="{{ url_for('post_content') }}" method="post">
                 <input type="hidden" name="post_id" value="{{post.post_id}}">
@@ -133,11 +132,17 @@
                 <label for="is_secret_comment">비밀 댓글</label>
                 <button onclick="submitComment()">댓글 등록</button>
             </form>
+            <button onclick="fn_post_update('{{ post.post_id }}')">게시글 수정</button>
         </div>
     </div>
     <script>
         function submitComment() {
             // Intentionally left blank to do nothing on button click.
+        }
+
+        // 게시글 수정 페이지로 이동
+        function fn_post_update(post_id) {
+            location.href = "/post_update?post_id="+post_id;
         }
     </script>
 </body>
