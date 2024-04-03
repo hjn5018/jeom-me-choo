@@ -6,12 +6,14 @@
             </a>
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="/post_list" class="nav-link px-2 text-white">점메추</a></li>
+                <li><a href="/post_list" class="nav-link px-2 text-white"><img src="/static/rice.png" alt="로고" style="width: 40px"></a></li>
             </ul>
 
             <div class="text-end">
                 {% if member %}
-                <img src="/static/img.png" alt="로고" style="width: 30px">
+                    {% if member.member_profile %}
+                        <img src="/static/upload/{{ member.member_profile }}" alt="프로필" style="width: 50px">
+                    {% endif %}
                 {{ member.member_name }}님
                 <button type="button" class="btn btn-secondary btn-sm" onclick="fn_logout()">로그아웃</button>
                 {% else %}
@@ -56,7 +58,7 @@
         </div>
     </form>
 
-    <form id="frm_join" action="{{ url_for('member_add') }}" method="post">
+    <form id="frm_join" action="{{ url_for('member_add') }}" method="post" enctype="multipart/form-data">
         <!-- 회원가입 modal -->
         <div class="modal fade" tabindex="-1" role="dialog" id="modalJoin">
             <div class="modal-dialog" role="document">
@@ -75,8 +77,13 @@
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control rounded-3 required" id="password"
-                                    name="password" placeholder="Password">
+                                    name="password" placeholder="confirm Password">
                                 <label for="password">Password</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control rounded-3 required" id="confirm_password"
+                                    name="confirm_password" placeholder="Confirm Password">
+                                <label for="confirm_password">Confirm Password</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control rounded-3 required" id="member_name"
@@ -87,6 +94,11 @@
                                 <input type="text" class="form-control rounded-3 required" id="member_nickname"
                                     name="member_nickname" placeholder="member_nickname">
                                 <label for="member_nickname">NickName</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="file" class="form-control rounded-3" id="member_profile"
+                                    name="member_profile" placeholder="member_profile">
+                                <label for="member_profile">Member Profile</label>
                             </div>
                             <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button"
                                 onclick="fn_join()">회원가입</button>
@@ -111,20 +123,25 @@
         if (message) {
             alert(message);
         } else {
-            // 중복 체크 후 회원가입
-            $.ajax({
-                type: "POST",
-                url: "/member_id_check",
-                data: $("#frm_join").serialize(),
-                dataType: "JSON",
-                success: function (result) {
-                    if (result) {
-                        alert("중복된 아이디가 존재합니다!");
-                    } else {
-                        document.getElementById("frm_join").submit();
+            // 비밀번호 확인
+            if ($("#frm_join input[name=password]").val() === $("#frm_join input[name=confirm_password]").val()) {
+                // 중복 체크 후 회원가입
+                $.ajax({
+                    type: "POST",
+                    url: "/member_id_check",
+                    data: $("#frm_join").serialize(),
+                    dataType: "JSON",
+                    success: function (result) {
+                        if (result) {
+                            alert("중복된 아이디가 존재합니다!");
+                        } else {
+                            document.getElementById("frm_join").submit();
+                        }
                     }
-                }
-            })
+                });
+            }else {
+                alert("비밀번호를 확인해주세요!");
+            }
         }
     }
 
