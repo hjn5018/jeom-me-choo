@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from flask_sqlalchemy import SQLAlchemy
 import os
 import hashlib
-import dateutil
 from pytz import timezone
 from datetime import datetime
 
@@ -62,7 +61,6 @@ class Post(db.Model):
     post_registration_date = db.Column(
         db.DateTime, default=datetime.now(korea_timezone))
 
-
     def __repr__(self):
         return (f'{self.post_id} | {self.member_id} | {self.post_title} | {self.post_content} '
                 f'| {self.post_views} | {self.post_likes} | {self.post_is_private} | {self.post_registration_date}')
@@ -86,9 +84,9 @@ class Comment(db.Model):
     # 등록일
     comment_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
 
-def __repr__(self):
-    return (f'{self.comment_id} | {self.post_id} | {self.member_id} | {self.comment_body} '
-            f'| {self.is_secret} | {self.comment_date}')
+    def __repr__(self):
+        return (f'{self.comment_id} | {self.post_id} | {self.member_id} | {self.comment_body} '
+                f'| {self.is_secret} | {self.comment_date}')
 
 
 with app.app_context():
@@ -146,11 +144,11 @@ def member_id_check():
 # 로그인
 @app.route('/member_login', methods=['POST'])
 def member_login():
-    print(111, request.form['prev_url'])
     member_login_id = request.form['member_login_id']
     password = request.form['password']
     member = Member.query.filter_by(member_login_id=member_login_id,
                                     password=hashlib.sha256(password.encode("UTF-8")).hexdigest())
+    prev_url = request.form.get('prev_url','/')
     if member.count():
         session["member"] = {
             "member_login_id": member.first().member_login_id,
@@ -158,9 +156,9 @@ def member_login():
             "member_nickname": member.first().member_nickname,
             "member_profile": member.first().member_profile
         }
-        return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다.", return_url=request.form['prev_url'])
+        return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다.", return_url=prev_url)
     else:
-        return render_template("message.html", message="회원정보를 찾을 수 없습니다.", return_url=request.form['prev_url'])
+        return render_template("message.html", message="회원정보를 찾을 수 없습니다.", return_url=prev_url)
 
 
 # 로그아웃
@@ -168,25 +166,6 @@ def member_login():
 def member_logout():
     del session["member"]
     return render_template("message.html", message="로그아웃 완료했습니다.", return_url="/")
-
-# 댓글 테스트 페이지
-
-
-@app.route('/comment', methods=['GET', 'POST'])
-def comment():
-    # 댓글 데이터 전송
-    if request.method == 'POST':
-        comment_body_receive = request.form["comment_body"]
-        is_secret_receive = request.form.get("is_secret", "No")
-        comment = Comment(comment_body=comment_body_receive,
-                          is_secret=is_secret_receive)
-        db.session.add(comment)
-        db.session.commit()
-        comment_list = Comment.query.all()
-    # 댓글 데이터 요청
-    elif request.method == 'GET':
-        comment_list = Comment.query.all()
-    return render_template("comment.html", data=comment_list, return_url="/comment")
 
 
 # 게시글 목록 페이지
@@ -199,8 +178,6 @@ def post_list():
 
 
 # 게시글 페이지
-
-
 @app.route("/post_instance")
 def post_instance():
     print(session.get("member"))
@@ -208,8 +185,6 @@ def post_instance():
 
 
 # 게시글 등록 // 관리자 접근권한은 나중에..?
-
-
 @app.route("/post_add", methods=['POST'])
 def post_add():
     member_id = request.form['member_login_id']
@@ -226,20 +201,101 @@ def post_add():
     return redirect(url_for("post_list"))
 
 
-# 게시글 내용 페이지
-@app.route('/post_content', methods=['GET'])
+# 게시글 내용 페이지(작성한 게시글이 보이고, 댓글을 달 수 있음.)
+@app.route('/post_content', methods=['GET', 'POST'])
 def post_content():
-    print(session.get("member"))
-    post_id = request.args.get('post_id')
-    # print(123123, post_id)
-    post = Post.query.filter_by(post_id=post_id).first()
-    # print(123123, post)
-    return render_template("post_content.html", member=session.get("member"), post=post)
+    # 댓글 데이터 전송
+    if request.method == 'POST':
+        print('ABCD')
+        post_id = request.form['post_id']
+        comment_body_receive = request.form["comment_body"]
+        is_secret_receive = request.form.get("is_secret", "No")
+        comment = Comment(comment_body=comment_body_receive,
+                          is_secret=is_secret_receive)
+        db.session.add(comment)
+        db.session.commit()
+        comment_list = Comment.query.all()
+        return render_template("message.html", message="댓글이 작성되었습니다.", return_url=f"/post_content?post_id={post_id}")
+    # 댓글 데이터 요청
+    elif request.method == 'GET':
+        post_id = request.args.get('post_id')
+        post = Post.query.filter_by(post_id=post_id).first()
+        comment_list = Comment.query.all()
+        print('ㄱㄴㄷㄹ',comment_list)
+        return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
+
+
+# # 댓글 테스트 페이지
+# @app.route('/comment', methods=['GET', 'POST'])
+# def comment():
+#     # 댓글 데이터 전송
+#     if request.method == 'POST':
+#         comment_body_receive = request.form["comment_body"]
+#         is_secret_receive = request.form.get("is_secret", "No")
+#         comment = Comment(comment_body=comment_body_receive,
+#                           is_secret=is_secret_receive)
+#         db.session.add(comment)
+#         db.session.commit()
+#         comment_list = Comment.query.all()
+#     # 댓글 데이터 요청
+#     elif request.method == 'GET':
+#         comment_list = Comment.query.all()
+#     return render_template("comment.html", data=comment_list, return_url="/comment")
+
+# ================수정 전====================================
+# 게시글 내용 페이지
+# @app.route('/post_content', methods=['GET'])
+# def post_content():
+#     print(session.get("member"))
+#     post_id = request.args.get('post_id')
+#     # print(123123, post_id)
+#     post = Post.query.filter_by(post_id=post_id).first()
+#     # print(123123, post)
+#     return render_template("post_content.html", member=session.get("member"), post=post)
+
+
+# # 댓글 테스트 페이지
+# @app.route('/comment', methods=['GET', 'POST'])
+# def comment():
+#     # 댓글 데이터 전송
+#     if request.method == 'POST':
+#         comment_body_receive = request.form["comment_body"]
+#         is_secret_receive = request.form.get("is_secret", "No")
+#         comment = Comment(comment_body=comment_body_receive,
+#                           is_secret=is_secret_receive)
+#         db.session.add(comment)
+#         db.session.commit()
+#         comment_list = Comment.query.all()
+#     # 댓글 데이터 요청
+#     elif request.method == 'GET':
+#         comment_list = Comment.query.all()
+#     return render_template("comment.html", data=comment_list, return_url="/comment")
+# ==============================================================
+
+# 게시글 수정 페이지
+@app.route('/post_update', methods=['GET', 'POST'])
+def post_update():
+    if request.method == "POST":
+        post_id = request.form['post_id']
+        post_title = request.form['post_title']
+        post_content = request.form['post_content']
+        post_is_private = request.form.get('post_is_private', False)
+        post = Post.query.filter_by(post_id=post_id).first()
+        post.post_title = post_title
+        post.post_content = post_content
+        post.post_is_private = post_is_private
+        db.session.commit()
+        return render_template("message.html", message="게시글을 수정하였습니다."
+                               , return_url="/post_content?post_id="+post_id)
+    elif request.method == 'GET':
+        post_id = request.args.get('post_id')
+        post = Post.query.filter_by(post_id=post_id).first()
+        return render_template("post_update.html", member=session.get("member"), post=post)
 
 
 # 게시글 목록의 시간 형식 정하기
 @app.template_filter('strftime')
-def _jinja2_filter_datetime(date, fmt=None):
+def _jinja2_filter_datetime(date):
     native = date.replace(tzinfo=None)
     format= '%Y-%m-%d %I:%M:%S %p'
     return native.strftime(format)
