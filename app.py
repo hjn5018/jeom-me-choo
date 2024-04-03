@@ -152,8 +152,6 @@ def member_logout():
     return render_template("message.html", message="로그아웃 완료했습니다.", return_url="/")
 
 # 댓글 테스트 페이지
-
-
 @app.route('/comment', methods=['GET', 'POST'])
 def comment():
     # 댓글 데이터 전송
@@ -164,11 +162,10 @@ def comment():
                           is_secret=is_secret_receive)
         db.session.add(comment)
         db.session.commit()
-        comment_list = Comment.query.all()
+        return redirect(url_for('comment'))  # POST 후에 리다이렉트
     # 댓글 데이터 요청
-    elif request.method == 'GET':
-        comment_list = Comment.query.all()
-    return render_template("comment.html", data=comment_list, return_url="/comment")
+    comment_list = Comment.query.filter(Comment.post_id == 1)
+    return render_template("comment.html", data=comment_list)
 
 
 # 게시글 목록 페이지
