@@ -47,23 +47,23 @@ class Post(db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey(
         'member.member_id'), nullable=False)
     # 글 제목
-    title = db.Column(db.String(), nullable=False)
+    post_title = db.Column(db.String(), nullable=False)
     # 글 내용
-    content = db.Column(db.Text, nullable=False)
+    post_content = db.Column(db.Text, nullable=False)
     # 조회수
-    views = db.Column(db.Integer, nullable=False, default=0)
+    post_views = db.Column(db.Integer, nullable=False, default=0)
     # 좋아요 수
-    likes = db.Column(db.Integer, nullable=False, default=0)
+    post_likes = db.Column(db.Integer, nullable=False, default=0)
     # 비밀글 여부
-    is_private = db.Column(db.Boolean, default=False)
+    post_is_private = db.Column(db.Boolean, default=False)
     # 등록일
-    registration_date = db.Column(
+    post_registration_date = db.Column(
         db.DateTime, default=datetime.now(korea_timezone))
 
 
 def __repr__(self):
-    return (f'{self.post_id} | {self.member_id} | {self.title} | {self.content} '
-            f'| {self.views} | {self.likes} | {self.is_private}')
+    return (f'{self.post_id} | {self.member_id} | {self.post_title} | {self.post_content} '
+            f'| {self.post_views} | {self.post_likes} | {self.post_is_private} | {self.post_registration_date}')
 
 
 # Comment 테이블 생성
@@ -73,10 +73,10 @@ class Comment(db.Model):
     # post_id
     # ForeignKey 테스트하느라 default값 넣어둠. 삭제해야됨
     post_id = db.Column(db.Integer, db.ForeignKey(
-        'post.post_id'), nullable=False, default = 1)
+        'post.post_id'), nullable=False, default=1)
     # member_id
     member_id = db.Column(db.Integer, db.ForeignKey(
-        'member.member_id'), nullable=False, default = 1)
+        'member.member_id'), nullable=False, default=1)
     # 댓글 내용
     comment_body = db.Column(db.String(), nullable=False)
     # 비밀 여부
@@ -101,8 +101,8 @@ def home():
 
 
 # 회원가입
-@app.route('/join_member', methods=['POST'])
-def join_member():
+@app.route('/member_add', methods=['POST'])
+def member_add():
     member_login_id = request.form['member_login_id']
     password = request.form['password']
     member_name = request.form['member_name']
@@ -117,8 +117,8 @@ def join_member():
 
 
 # 아이디 중복 체크
-@app.route('/check_member_id', methods=['POST'])
-def check_member_id():
+@app.route('/member_id_check', methods=['POST'])
+def member_id_check():
     member_login_id = request.form['member_login_id']
     if Member.query.filter_by(member_login_id=member_login_id).count():
         return jsonify(True)
@@ -127,8 +127,9 @@ def check_member_id():
 
 
 # 로그인
-@app.route('/login_member', methods=['POST'])
-def login_member():
+@app.route('/member_login', methods=['POST'])
+def member_login():
+    print(111, request.form['prev_url'])
     member_login_id = request.form['member_login_id']
     password = request.form['password']
     member = Member.query.filter_by(member_login_id=member_login_id,
@@ -139,26 +140,73 @@ def login_member():
             "member_name": member.first().member_name,
             "member_nickname": member.first().member_nickname
         }
-        return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다.", return_url="/")
+        return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다.", return_url=request.form['prev_url'])
     else:
-        return render_template("message.html", message="회원정보를 찾을 수 없습니다.", return_url="/")
+        return render_template("message.html", message="회원정보를 찾을 수 없습니다.", return_url=request.form['prev_url'])
 
 
 # 로그아웃
-@app.route('/logout_member', methods=['GET'])
-def logout_member():
+@app.route('/member_logout', methods=['GET'])
+def member_logout():
     del session["member"]
     return render_template("message.html", message="로그아웃 완료했습니다.", return_url="/")
 
 # 댓글 테스트 페이지
-@app.route('/comment', methods=['POST'])
+
+
+@app.route('/comment', methods=['GET', 'POST'])
 def comment():
-    comment_body_receive = request.form["comment_body"]
-    is_secret_receive = request.form.get("is_secret", "No")
-    comment = Comment(comment_body=comment_body_receive, is_secret=is_secret_receive)
-    db.session.add(comment)
+    # 댓글 데이터 전송
+    if request.method == 'POST':
+        comment_body_receive = request.form["comment_body"]
+        is_secret_receive = request.form.get("is_secret", "No")
+        comment = Comment(comment_body=comment_body_receive,
+                          is_secret=is_secret_receive)
+        db.session.add(comment)
+        db.session.commit()
+        comment_list = Comment.query.all()
+    # 댓글 데이터 요청
+    elif request.method == 'GET':
+        comment_list = Comment.query.all()
+    return render_template("comment.html", data=comment_list, return_url="/comment")
+
+
+# 게시글 목록 페이지
+@app.route("/post_list")
+def post_list():
+    print(session.get("member"))
+    return render_template("post_list.html", member=session.get("member"))
+
+# 환호님 버전
+# @app.route('/list_post')
+# def list_post():
+#     print(session.get("member"))
+#     return render_template("post_list.html",member=session.get("member"))
+
+# 게시글 페이지
+
+
+@app.route("/post_instance")
+def post_instance():
+    print(session.get("member"))
+    return render_template("post_instance.html", member=session.get("member"))
+
+# 게시글 등록 // 관리자 접근권한은 나중에..?
+
+
+@app.route("/post_add", methods=['POST'])
+def post_add():
+    member_id = request.form['member_login_id']
+    post_title = request.form['post_title']
+    post_content = request.form['post_content']
+
+    post = Post(member_id=member_id, post_title=post_title,
+                post_content=post_content)
+    print(post)
+    db.session.add(post)
     db.session.commit()
-    return render_template("comment.html")
+
+    return redirect(url_for("post_list"))
 
 
 if __name__ == '__main__':

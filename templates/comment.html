@@ -1,6 +1,11 @@
 <!-- 헤더 불러오기 -->
+{% for comment in data %}
+<div>{{ comment.comment_body }}</div>
+<div>{{ comment.comment_date }}</div>
+{% endfor %}
+
 <form action="{{ url_for('comment') }}" method="post">
-  <input type="text" class="comment_body" name="comment_body" >
+  <input type="text" class="comment_body" name="comment_body">
   <input type="checkbox" class="is_secret_comment" value="Yes" name="is_secret">
   <label for="is_secret_comment">비밀 댓글</label>
   <button type="submit" class="comment_button">댓글 등록</button>
