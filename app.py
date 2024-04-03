@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from flask_sqlalchemy import SQLAlchemy
 import os
 import hashlib
+import dateutil
 from pytz import timezone
 from datetime import datetime
 
@@ -85,9 +86,9 @@ class Comment(db.Model):
     # 등록일
     comment_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
 
-    def __repr__(self):
-        return (f'{self.comment_id} | {self.post_id} | {self.member_id} | {self.comment_body} '
-                f'| {self.is_secret} | {self.comment_date}')
+def __repr__(self):
+    return (f'{self.comment_id} | {self.post_id} | {self.member_id} | {self.comment_body} '
+            f'| {self.is_secret} | {self.comment_date}')
 
 
 with app.app_context():
@@ -192,13 +193,9 @@ def comment():
 @app.route("/post_list")
 def post_list():
     print(session.get("member"))
-    return render_template("post_list.html", member=session.get("member"))
-
-# 환호님 버전
-# @app.route('/list_post')
-# def list_post():
-#     print(session.get("member"))
-#     return render_template("post_list.html",member=session.get("member"))
+    post = Post.query.order_by(Post.post_registration_date.desc()).all()
+    # print(post)
+    return render_template("post_list.html", member=session.get("member"), post_list=post)
 
 
 # 게시글 페이지
@@ -224,8 +221,28 @@ def post_add():
     print(post)
     db.session.add(post)
     db.session.commit()
-
+    # redirect(url_for("post_list"))
+    # return render_template("post_list.html")
     return redirect(url_for("post_list"))
+
+
+# 게시글 내용 페이지
+@app.route('/post_content', methods=['GET'])
+def post_content():
+    print(session.get("member"))
+    post_id = request.args.get('post_id')
+    # print(123123, post_id)
+    post = Post.query.filter_by(post_id=post_id).first()
+    # print(123123, post)
+    return render_template("post_content.html", member=session.get("member"), post=post)
+
+
+# 게시글 목록의 시간 형식 정하기
+@app.template_filter('strftime')
+def _jinja2_filter_datetime(date, fmt=None):
+    native = date.replace(tzinfo=None)
+    format= '%Y-%m-%d %I:%M:%S %p'
+    return native.strftime(format)
 
 
 if __name__ == '__main__':  
