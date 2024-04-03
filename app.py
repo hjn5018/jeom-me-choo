@@ -120,8 +120,8 @@ def member_id_check():
 
 
 # 로그인
-@app.route('/login_member', methods=['POST'])
-def login_member():
+@app.route('/member_login', methods=['POST'])
+def member_login():
     print(111, request.form['prev_url'])
     member_login_id = request.form['member_login_id']
     password = request.form['password']
