@@ -80,7 +80,7 @@ class Comment(db.Model):
     # 댓글 내용
     comment_body = db.Column(db.String(), nullable=False)
     # 비밀 여부
-    is_secret = db.Column(db.String())
+    is_secret = db.Column(db.Integer, default="0")
     # 등록일
     comment_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
 
