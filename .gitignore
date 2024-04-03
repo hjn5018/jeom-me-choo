@@ -4,3 +4,4 @@ venv
 .vscode
 __pycache__
 database.db
+static/upload

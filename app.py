@@ -30,13 +30,14 @@ class Member(db.Model):
     member_name = db.Column(db.String(), nullable=False)
     # 별명
     member_nickname = db.Column(db.String(), nullable=False)
+    # 프로필 사진
+    member_profile = db.Column(db.String(), nullable=True)
     # 권한
     member_role = db.Column(db.String(), nullable=False, default='member')
 
-
-def __repr__(self):
-    return (f'{self.member_id} | {self.member_login_id} | {self.password} | {self.member_name} '
-            f'| {self.member_nickname} | {self.member_role}')
+    def __repr__(self):
+            return (f'{self.member_id} | {self.member_login_id} | {self.password} | {self.member_name} '
+                    f'| {self.member_nickname} | {self.member_role}')
 
 
 # 게시글 테이블 생성
@@ -61,9 +62,9 @@ class Post(db.Model):
         db.DateTime, default=datetime.now(korea_timezone))
 
 
-def __repr__(self):
-    return (f'{self.post_id} | {self.member_id} | {self.post_title} | {self.post_content} '
-            f'| {self.post_views} | {self.post_likes} | {self.post_is_private} | {self.post_registration_date}')
+    def __repr__(self):
+        return (f'{self.post_id} | {self.member_id} | {self.post_title} | {self.post_content} '
+                f'| {self.post_views} | {self.post_likes} | {self.post_is_private} | {self.post_registration_date}')
 
 
 # Comment 테이블 생성
@@ -92,11 +93,13 @@ class Comment(db.Model):
 with app.app_context():
     db.create_all()
 
+UPLOAD_FOLDER = os.getcwd() + '/static/upload'  # 절대 파일 경로
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # 확장자 검증
+
 
 # 메인 페이지
 @app.route('/')
 def home():
-    print(session.get("member"))
     return render_template("index.html", member=session.get("member"))
 
 
@@ -107,9 +110,22 @@ def member_add():
     password = request.form['password']
     member_name = request.form['member_name']
     member_nickname = request.form['member_nickname']
+    file = request.files['member_profile']
+    file_name = ""
+    # 파일 있는지 확인
+    if file:
+        # 확장자 체크
+        if file.filename.split('.')[-1] in ALLOWED_EXTENSIONS:
+            # os.makedirs(UPLOAD_FOLDER)
+            # 파일명은 중복되면 에러가 나기때문에 앞에 member_id 추가
+            file_name = member_login_id+"_"+file.filename
+            # 파일 저장
+            file.save(os.path.join(UPLOAD_FOLDER, file_name))
+        else:
+            return render_template("message.html", message="이미지 파일만 가능합니다!", return_url="/")
 
-    member = Member(member_login_id=member_login_id, password=hashlib.sha256(password.encode(
-        "UTF-8")).hexdigest(), member_name=member_name, member_nickname=member_nickname)
+    member = Member(member_login_id=member_login_id, password=hashlib.sha256(password.encode("UTF-8")).hexdigest()
+                    , member_name=member_name, member_nickname=member_nickname, member_profile=file_name)
     db.session.add(member)
     db.session.commit()
 
@@ -138,7 +154,8 @@ def member_login():
         session["member"] = {
             "member_login_id": member.first().member_login_id,
             "member_name": member.first().member_name,
-            "member_nickname": member.first().member_nickname
+            "member_nickname": member.first().member_nickname,
+            "member_profile": member.first().member_profile
         }
         return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다.", return_url=request.form['prev_url'])
     else:
@@ -183,6 +200,7 @@ def post_list():
 #     print(session.get("member"))
 #     return render_template("post_list.html",member=session.get("member"))
 
+
 # 게시글 페이지
 
 
@@ -190,6 +208,7 @@ def post_list():
 def post_instance():
     print(session.get("member"))
     return render_template("post_instance.html", member=session.get("member"))
+
 
 # 게시글 등록 // 관리자 접근권한은 나중에..?
 
@@ -209,5 +228,7 @@ def post_add():
     return redirect(url_for("post_list"))
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+if __name__ == '__main__':  
+    app.run(host='0.0.0.0', port=5005, debug=True)
+    
+    
