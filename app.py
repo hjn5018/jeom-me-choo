@@ -169,25 +169,6 @@ def member_logout():
     del session["member"]
     return render_template("message.html", message="로그아웃 완료했습니다.", return_url="/")
 
-# 댓글 테스트 페이지
-
-
-@app.route('/comment', methods=['GET', 'POST'])
-def comment():
-    # 댓글 데이터 전송
-    if request.method == 'POST':
-        comment_body_receive = request.form["comment_body"]
-        is_secret_receive = request.form.get("is_secret", "No")
-        comment = Comment(comment_body=comment_body_receive,
-                          is_secret=is_secret_receive)
-        db.session.add(comment)
-        db.session.commit()
-        comment_list = Comment.query.all()
-    # 댓글 데이터 요청
-    elif request.method == 'GET':
-        comment_list = Comment.query.all()
-    return render_template("comment.html", data=comment_list, return_url="/comment")
-
 
 # 게시글 목록 페이지
 @app.route("/post_list")
@@ -199,8 +180,6 @@ def post_list():
 
 
 # 게시글 페이지
-
-
 @app.route("/post_instance")
 def post_instance():
     print(session.get("member"))
@@ -208,8 +187,6 @@ def post_instance():
 
 
 # 게시글 등록 // 관리자 접근권한은 나중에..?
-
-
 @app.route("/post_add", methods=['POST'])
 def post_add():
     member_id = request.form['member_login_id']
@@ -226,20 +203,84 @@ def post_add():
     return redirect(url_for("post_list"))
 
 
-# 게시글 내용 페이지
-@app.route('/post_content', methods=['GET'])
+# 게시글 내용 페이지(작성한 게시글이 보이고, 댓글을 달 수 있음.)
+@app.route('/post_content', methods=['GET', 'POST'])
 def post_content():
-    print(session.get("member"))
-    post_id = request.args.get('post_id')
-    # print(123123, post_id)
-    post = Post.query.filter_by(post_id=post_id).first()
-    # print(123123, post)
-    return render_template("post_content.html", member=session.get("member"), post=post)
+    # 댓글 데이터 전송
+    if request.method == 'POST':
+        print('ABCD')
+        post_id = request.form['post_id']
+        comment_body_receive = request.form["comment_body"]
+        is_secret_receive = request.form.get("is_secret", "No")
+        comment = Comment(comment_body=comment_body_receive,
+                          is_secret=is_secret_receive)
+        db.session.add(comment)
+        db.session.commit()
+        comment_list = Comment.query.all()
+        return render_template("message.html", message="댓글이 작성되었습니다.", return_url=f"/post_content?post_id={post_id}")
+    # 댓글 데이터 요청
+    elif request.method == 'GET':
+        post_id = request.args.get('post_id')
+        post = Post.query.filter_by(post_id=post_id).first()
+        comment_list = Comment.query.all()
+        print('ㄱㄴㄷㄹ',comment_list)
+        return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
 
+
+
+
+
+
+# # 댓글 테스트 페이지
+# @app.route('/comment', methods=['GET', 'POST'])
+# def comment():
+#     # 댓글 데이터 전송
+#     if request.method == 'POST':
+#         comment_body_receive = request.form["comment_body"]
+#         is_secret_receive = request.form.get("is_secret", "No")
+#         comment = Comment(comment_body=comment_body_receive,
+#                           is_secret=is_secret_receive)
+#         db.session.add(comment)
+#         db.session.commit()
+#         comment_list = Comment.query.all()
+#     # 댓글 데이터 요청
+#     elif request.method == 'GET':
+#         comment_list = Comment.query.all()
+#     return render_template("comment.html", data=comment_list, return_url="/comment")
+
+# ================수정 전====================================
+# 게시글 내용 페이지
+# @app.route('/post_content', methods=['GET'])
+# def post_content():
+#     print(session.get("member"))
+#     post_id = request.args.get('post_id')
+#     # print(123123, post_id)
+#     post = Post.query.filter_by(post_id=post_id).first()
+#     # print(123123, post)
+#     return render_template("post_content.html", member=session.get("member"), post=post)
+
+
+# # 댓글 테스트 페이지
+# @app.route('/comment', methods=['GET', 'POST'])
+# def comment():
+#     # 댓글 데이터 전송
+#     if request.method == 'POST':
+#         comment_body_receive = request.form["comment_body"]
+#         is_secret_receive = request.form.get("is_secret", "No")
+#         comment = Comment(comment_body=comment_body_receive,
+#                           is_secret=is_secret_receive)
+#         db.session.add(comment)
+#         db.session.commit()
+#         comment_list = Comment.query.all()
+#     # 댓글 데이터 요청
+#     elif request.method == 'GET':
+#         comment_list = Comment.query.all()
+#     return render_template("comment.html", data=comment_list, return_url="/comment")
+# ==============================================================
 
 # 게시글 목록의 시간 형식 정하기
 @app.template_filter('strftime')
-def _jinja2_filter_datetime(date, fmt=None):
+def _jinja2_filter_datetime(date):
     native = date.replace(tzinfo=None)
     format= '%Y-%m-%d %I:%M:%S %p'
     return native.strftime(format)
