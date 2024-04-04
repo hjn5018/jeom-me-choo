@@ -213,7 +213,7 @@ def post_content():
         post_id = request.form['post_id']
         member_id = request.form['member_id']
         comment_body_receive = request.form["comment_body"]
-        is_secret_receive = request.form.get("is_secret", "No")
+        is_secret_receive = request.form.get("is_secret", "0")
         comment = Comment(post_id=post_id,
                           member_id=member_id,
                           comment_body=comment_body_receive,

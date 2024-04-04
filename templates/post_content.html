@@ -176,7 +176,7 @@
         <div id="editDeleteButtons">
 
             <!-- 회원만 보이게 -->
-            {% if (member and member.member_login_id == post.member_id) or (member and member.member_role == 'admin') %} 
+            {% if (member and member.member_login_id == post.member_id) or (member and member.member_role == 'admin') %}
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
             <button onclick="fn_post_delete('{{ post.post_id }}')">삭제</button>
             {% endif %}
@@ -187,10 +187,18 @@
             <!-- 기존 댓글 -->
             <ul id="commentList">
                 {% for comment in comment_list %}
-                <li>{{ comment.comment_body }}
+                
+                <!-- 비밀글이 아닐 경우 -->
+                <li>
+                    {% if (not comment.is_secret) or (member and member.member_id == comment.member_id) or
+                    (member.member_role == 'admin') or (post.member_id == member.member_login_id) %}
+                    {{ comment.comment_body }}
+                    {% else %}
+                    비밀댓글입니다.
+                    {% endif %}
                     <div class="comment-actions">
                         <!-- 회원만 보이게 -->
-                        {% if (member and member.member_id == comment.member_id) or member.member_role == 'admin' %} 
+                        {% if (member and member.member_id == comment.member_id) or member.member_role == 'admin' %}
                         <span class="comment-action" onclick="editComment('{{ comment.comment_id }}')">수정</span>
                         <span class="comment-action" onclick="deleteComment('{{ comment.comment_id }}')">삭제</span>
                         {% endif %}
@@ -233,7 +241,7 @@
                     location.reload()
                 })
             }
-            
+
             // 게시글 수정 페이지로 이동
             function fn_post_update(post_id) {
                 location.href = "/post_update?post_id=" + post_id;
@@ -243,8 +251,8 @@
             }
         </script>
     </div>
-<!-- 푸터 불러오기 -->
-{% include 'footer.html' %}
+    <!-- 푸터 불러오기 -->
+    {% include 'footer.html' %}
 </body>
 
 </html>
