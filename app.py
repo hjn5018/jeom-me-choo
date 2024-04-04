@@ -282,6 +282,14 @@ def post_update():
         post = Post.query.filter_by(post_id=post_id).first()
         return render_template("post_update.html", member=session.get("member"), post=post)
 
+@app.route('/post_delete' , methods=['GET'])
+def post_delete():
+    post_id = request.args.get('post_id')
+    post = Post.query.filter_by(post_id=post_id).first()
+    db.session.delete(post)
+    db.session.commit()
+    return render_template("message.html", message="게시글을 삭제하였습니다.", return_url="/post_list")
+
 
 # 게시글 목록의 시간 형식 정하기
 @app.template_filter('strftime')
