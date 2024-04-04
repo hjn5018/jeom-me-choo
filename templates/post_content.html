@@ -156,6 +156,11 @@
 </head>
 
 <body>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
     <!-- 헤더 불러오기 -->
     {% include 'header.html' %}
 
@@ -180,8 +185,8 @@
                 {% for comment in comment_list %}
                 <li>{{ comment.comment_body }}
                     <div class="comment-actions">
-                        <span class="comment-action" onclick="editComment('{{ comment.comment_id }}')">수정</span>
-                        <span class="comment-action" onclick="deleteComment('{{ comment.comment_id }}')">삭제</span>
+                        <span class="comment-action" onclick="editComment()">수정</span>
+                        <span class="comment-action" onclick="deleteComment()">삭제</span>
                     </div>
                 </li>
                 <li>{{ comment.comment_date.strftime('%Y-%m-%d %I:%M:%S %p') }}
@@ -189,40 +194,32 @@
                 {% endfor %}
             </ul>
 
-            <form action="{{ url_for('post_content') }}" method="post" class="w-100">
-                <input type="hidden" name="post_id" value="{{post.post_id}}">
-                <div class="comment-form">
-                    <textarea id="commentInput" placeholder="댓글을 입력하세요..." name="comment_body"></textarea>
-                    <div class="comment-secret">
-                        <input type="checkbox" id="is_secret_comment" class="is_secret_comment" value="1"
-                            name="is_secret">
-                        <label for="is_secret_comment">비밀 댓글</label>
-                    </div>
-                    <button>댓글 등록</button>
+        <form action="{{ url_for('post_content') }}" method="post" class="w-100">
+            <input type="hidden" name="post_id" value="{{post.post_id}}">
+            <div class="comment-form">
+                <textarea id="commentInput" placeholder="댓글을 입력하세요..." name="comment_body"></textarea>
+                <div class="comment-secret">
+                    <input type="checkbox" id="is_secret_comment" class="is_secret_comment" value="1" name="is_secret">
+                    <label for="is_secret_comment">비밀 댓글</label>
                 </div>
-            </form>
+                <button>댓글 등록</button>
+            </div>
+        </form>
         </div>
 
-        <script>
-            function editComment() {
-                alert("댓글 수정 기능이 여기에 구현됩니다.");
-            }
+    <script>
+    function editComment() {
+        alert("댓글 수정 기능이 여기에 구현됩니다.");
+    }
 
-            function deleteComment(comment_id) {
-
-                $.ajax({
-                    url: '/delete_comment',
-                    type: 'GET',
-                    data: { comment_id: comment_id }
-                }).then(() => {
-                    location.reload()
-                })
-            }
-            // 게시글 수정 페이지로 이동
-            function fn_post_update(post_id) {
-                location.href = "/post_update?post_id=" + post_id;
-            }
-        </script>
+    function deleteComment() {
+        alert("댓글 삭제 기능이 여기에 구현됩니다.");
+    }
+    // 게시글 수정 페이지로 이동
+    function fn_post_update(post_id) {
+            location.href = "/post_update?post_id="+post_id;
+        }
+    </script>
 </body>
 
 </html>

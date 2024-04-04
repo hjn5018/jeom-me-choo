@@ -59,7 +59,7 @@ class Post(db.Model):
     post_is_private = db.Column(db.Boolean, default=False)
     # 등록일
     post_registration_date = db.Column(
-        db.DateTime, default=datetime.now(korea_timezone))
+        db.DateTime)
 
     def __repr__(self):
         return (f'{self.post_id} | {self.member_id} | {self.post_title} | {self.post_content} '
@@ -73,10 +73,10 @@ class Comment(db.Model):
     # post_id
     # ForeignKey 테스트하느라 default값 넣어둠. 삭제해야됨
     post_id = db.Column(db.Integer, db.ForeignKey(
-        'post.post_id'), nullable=False, default=1)
+        'post.post_id'), nullable=False)
     # member_id
     member_id = db.Column(db.Integer, db.ForeignKey(
-        'member.member_id'), nullable=False, default=1)
+        'member.member_id'), nullable=False)
     # 댓글 내용
     comment_body = db.Column(db.String(), nullable=False)
     # 비밀 여부
@@ -192,7 +192,7 @@ def post_add():
     post_content = request.form['post_content']
 
     post = Post(member_id=member_id, post_title=post_title,
-                post_content=post_content)
+                post_content=post_content, post_registration_date=datetime.now(korea_timezone))
     print(post)
     db.session.add(post)
     db.session.commit()
@@ -208,9 +208,12 @@ def post_content():
     if request.method == 'POST':
         print('ABCD')
         post_id = request.form['post_id']
+        member_id = request.form['member_id']
         comment_body_receive = request.form["comment_body"]
         is_secret_receive = request.form.get("is_secret", "No")
-        comment = Comment(comment_body=comment_body_receive,
+        comment = Comment(post_id=post_id,
+                          member_id=member_id,
+                          comment_body=comment_body_receive,
                           is_secret=is_secret_receive, comment_date=datetime.now(korea_timezone))
         db.session.add(comment)
         db.session.commit()
@@ -220,8 +223,10 @@ def post_content():
     elif request.method == 'GET':
         post_id = request.args.get('post_id')
         post = Post.query.filter_by(post_id=post_id).first()
-        comment_list = Comment.query.all()
-        print('ㄱㄴㄷㄹ', comment_list)
+        print('ABC', post)
+        # member = Member.query.filter_by(member_id=member_id).first()
+        comment_list = Comment.query.filter_by(post_id=post_id).all()
+        # print('ㄱㄴㄷㄹ',comment_list)
         return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
 
 # 댓글 삭제
@@ -236,6 +241,25 @@ def delete_comment():
     db.session.delete(db_comment)
     db.session.commit()
     return redirect("/post_content?post_id=1")
+
+
+# 댓글 수정 페이지(GET) / 댓글 수정(POST)
+@app.route('/comment_update', methods=['GET', 'POST'])
+def comment_update():
+    if request.method == 'POST':
+        comment_id = request.form['comment_id']
+        comment_body = request.form['comment_body']
+        is_secret = request.form.get('is_secret', "0")
+        comment = Comment.query.filter_by(comment_id=comment_id).first()
+        comment.comment_body = comment_body
+        comment.is_secret = is_secret
+        db.session.commit()
+        return render_template("message.html", message="댓글이 수정되었습니다.", return_url=f"/post_content?post_id={comment.post_id}")
+    elif request.method == 'GET':
+        comment_id = request.args.get('comment_id')
+        comment = Comment.query.filter_by(comment_id=comment_id).first()
+        print(comment)
+        return render_template("comment_update.html", comment=comment)
 
 
 # # 댓글 테스트 페이지
@@ -284,7 +308,6 @@ def delete_comment():
 #         comment_list = Comment.query.all()
 #     return render_template("comment.html", data=comment_list, return_url="/comment")
 # ==============================================================
-
 # 게시글 수정 페이지
 @app.route('/post_update', methods=['GET', 'POST'])
 def post_update():
