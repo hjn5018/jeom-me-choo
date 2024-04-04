@@ -225,6 +225,25 @@ def post_content():
         return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
 
 
+# 댓글 수정 페이지(GET) / 댓글 수정(POST)
+@app.route('/comment_update', methods=['GET', 'POST'])
+def comment_update():
+    if request.method == 'POST':
+        comment_id = request.form['comment_id']
+        comment_body = request.form['comment_body']
+        is_secret = request.form.get('is_secret', "0")
+        comment = Comment.query.filter_by(comment_id=comment_id).first()
+        comment.comment_body = comment_body
+        comment.is_secret = is_secret
+        db.session.commit()
+        return render_template("message.html", message="댓글이 수정되었습니다.", return_url=f"/post_content?post_id={comment.post_id}")
+    elif request.method == 'GET':
+        comment_id = request.args.get('comment_id')
+        comment = Comment.query.filter_by(comment_id=comment_id).first()
+        print(comment)
+        return render_template("comment_update.html", comment=comment)
+
+
 # # 댓글 테스트 페이지
 # @app.route('/comment', methods=['GET', 'POST'])
 # def comment():
@@ -271,7 +290,6 @@ def post_content():
 #         comment_list = Comment.query.all()
 #     return render_template("comment.html", data=comment_list, return_url="/comment")
 # ==============================================================
-
 # 게시글 수정 페이지
 @app.route('/post_update', methods=['GET', 'POST'])
 def post_update():
@@ -302,6 +320,6 @@ def _jinja2_filter_datetime(date):
 
 
 if __name__ == '__main__':  
-    app.run(host='0.0.0.0', port=5005, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
     
     

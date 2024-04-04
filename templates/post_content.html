@@ -178,7 +178,7 @@
                 {% for comment in comment_list %}
                 <li>{{ comment.comment_body }}
                     <div class="comment-actions">
-                        <span class="comment-action" onclick="editComment()">수정</span>
+                        <span class="comment-action" onclick="editComment('{{ comment.comment_id }}')">수정</span>
                         <span class="comment-action" onclick="deleteComment()">삭제</span>
                     </div>
                 </li>
@@ -200,20 +200,21 @@
                 </div>
             </form>
         </div>
+    </div>
+    <script>
+        // 댓글 수정 페이지로 이동
+        function editComment(comment_id) {
+            location.href = "/comment_update?comment_id="+comment_id;
+        }
 
-        <script>
-            function editComment() {
-                alert("댓글 수정 기능이 여기에 구현됩니다.");
-            }
-
-            function deleteComment() {
-                alert("댓글 삭제 기능이 여기에 구현됩니다.");
-            }
-            // 게시글 수정 페이지로 이동
-            function fn_post_update(post_id) {
-                location.href = "/post_update?post_id=" + post_id;
-            }
-        </script>
+        function deleteComment() {
+            alert("댓글 삭제 기능이 여기에 구현됩니다.");
+        }
+        // 게시글 수정 페이지로 이동
+        function fn_post_update(post_id) {
+            location.href = "/post_update?post_id="+post_id;
+        }
+    </script>
 </body>
 
 </html>
