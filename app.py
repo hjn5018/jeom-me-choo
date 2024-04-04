@@ -227,6 +227,8 @@ def post_content():
     elif request.method == 'GET':
         post_id = request.args.get('post_id')
         post = Post.query.filter_by(post_id=post_id).first()
+        post.post_views += 1
+        db.session.commit()
         print('ABC', post)
         # member = Member.query.filter_by(member_id=member_id).first()
         comment_list = Comment.query.filter_by(post_id=post_id).all()

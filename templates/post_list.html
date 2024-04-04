@@ -93,7 +93,7 @@
                             {% else %}
                             <td><a href="/post_content?post_id={{ element.post_id }}">{{ element.post_title }}</a></td>
                             {% endif %}
-                            <td>0</td>
+                            <td>{{ element.post_views }}</td>
                             <td>{{ element.post_registration_date | strftime }}</td>
                         </tr>
 
