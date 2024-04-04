@@ -36,8 +36,8 @@ class Member(db.Model):
     member_role = db.Column(db.String(), nullable=False, default='member')
 
     def __repr__(self):
-            return (f'{self.member_id} | {self.member_login_id} | {self.password} | {self.member_name} '
-                    f'| {self.member_nickname} | {self.member_role}')
+        return (f'{self.member_id} | {self.member_login_id} | {self.password} | {self.member_name} '
+                f'| {self.member_nickname} | {self.member_role}')
 
 
 # 게시글 테이블 생성
@@ -82,7 +82,7 @@ class Comment(db.Model):
     # 비밀 여부
     is_secret = db.Column(db.Integer, default="0")
     # 등록일
-    comment_date = db.Column(db.DateTime, default=datetime.now(korea_timezone))
+    comment_date = db.Column(db.DateTime)
 
     def __repr__(self):
         return (f'{self.comment_id} | {self.post_id} | {self.member_id} | {self.comment_body} '
@@ -123,8 +123,8 @@ def member_add():
         else:
             return render_template("message.html", message="이미지 파일만 가능합니다!", return_url="/")
 
-    member = Member(member_login_id=member_login_id, password=hashlib.sha256(password.encode("UTF-8")).hexdigest()
-                    , member_name=member_name, member_nickname=member_nickname, member_profile=file_name)
+    member = Member(member_login_id=member_login_id, password=hashlib.sha256(password.encode(
+        "UTF-8")).hexdigest(), member_name=member_name, member_nickname=member_nickname, member_profile=file_name)
     db.session.add(member)
     db.session.commit()
 
@@ -148,7 +148,7 @@ def member_login():
     password = request.form['password']
     member = Member.query.filter_by(member_login_id=member_login_id,
                                     password=hashlib.sha256(password.encode("UTF-8")).hexdigest())
-    prev_url = request.form.get('prev_url','/')
+    prev_url = request.form.get('prev_url', '/')
     if member.count():
         session["member"] = {
             "member_login_id": member.first().member_login_id,
@@ -214,7 +214,7 @@ def post_content():
         comment = Comment(post_id=post_id,
                           member_id=member_id,
                           comment_body=comment_body_receive,
-                          is_secret=is_secret_receive)
+                          is_secret=is_secret_receive, comment_date=datetime.now(korea_timezone))
         db.session.add(comment)
         db.session.commit()
         comment_list = Comment.query.all()
@@ -228,6 +228,19 @@ def post_content():
         comment_list = Comment.query.filter_by(post_id=post_id).all()
         # print('ㄱㄴㄷㄹ',comment_list)
         return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
+
+# 댓글 삭제
+
+
+@app.route('/delete_comment', methods=['GET'])
+def delete_comment():
+    comment_id = request.args.get('comment_id')
+    # db_comment = db.session.execute(select(Comment).filter(Comment.comment_id == comment_id)).scalars().first()
+    db_comment = db.session.query(Comment).filter(
+        Comment.comment_id == comment_id).first()
+    db.session.delete(db_comment)
+    db.session.commit()
+    return redirect("/post_content?post_id=1")
 
 
 # 댓글 수정 페이지(GET) / 댓글 수정(POST)
@@ -308,8 +321,7 @@ def post_update():
         post.post_content = post_content
         post.post_is_private = post_is_private
         db.session.commit()
-        return render_template("message.html", message="게시글을 수정하였습니다."
-                               , return_url="/post_content?post_id="+post_id)
+        return render_template("message.html", message="게시글을 수정하였습니다.", return_url="/post_content?post_id="+post_id)
     elif request.method == 'GET':
         post_id = request.args.get('post_id')
         post = Post.query.filter_by(post_id=post_id).first()
@@ -320,11 +332,9 @@ def post_update():
 @app.template_filter('strftime')
 def _jinja2_filter_datetime(date):
     native = date.replace(tzinfo=None)
-    format= '%Y-%m-%d %I:%M:%S %p'
+    format = '%Y-%m-%d %I:%M:%S %p'
     return native.strftime(format)
 
 
-if __name__ == '__main__':  
-    app.run(host='0.0.0.0', port=5001, debug=True)
-    
-    
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5005, debug=True)
