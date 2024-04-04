@@ -73,10 +73,10 @@ class Comment(db.Model):
     # post_id
     # ForeignKey 테스트하느라 default값 넣어둠. 삭제해야됨
     post_id = db.Column(db.Integer, db.ForeignKey(
-        'post.post_id'), nullable=False, default=1)
+        'post.post_id'), nullable=False)
     # member_id
     member_id = db.Column(db.Integer, db.ForeignKey(
-        'member.member_id'), nullable=False, default=1)
+        'member.member_id'), nullable=False)
     # 댓글 내용
     comment_body = db.Column(db.String(), nullable=False)
     # 비밀 여부
@@ -208,9 +208,12 @@ def post_content():
     if request.method == 'POST':
         print('ABCD')
         post_id = request.form['post_id']
+        member_id = request.form['member_id']
         comment_body_receive = request.form["comment_body"]
         is_secret_receive = request.form.get("is_secret", "No")
-        comment = Comment(comment_body=comment_body_receive,
+        comment = Comment(post_id=post_id,
+                          member_id=member_id,
+                          comment_body=comment_body_receive,
                           is_secret=is_secret_receive)
         db.session.add(comment)
         db.session.commit()
@@ -220,8 +223,10 @@ def post_content():
     elif request.method == 'GET':
         post_id = request.args.get('post_id')
         post = Post.query.filter_by(post_id=post_id).first()
-        comment_list = Comment.query.all()
-        print('ㄱㄴㄷㄹ',comment_list)
+        print('ABC', post)
+        # member = Member.query.filter_by(member_id=member_id).first()
+        comment_list = Comment.query.filter_by(post_id=post_id).all()
+        # print('ㄱㄴㄷㄹ',comment_list)
         return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
 
 
