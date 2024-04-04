@@ -195,7 +195,8 @@ def post_add():
 
     post = Post(member_id=member_id, post_title=post_title,
                 post_content=post_content, post_registration_date=datetime.now(korea_timezone),
-                post_is_private=post_is_private)
+                post_is_private=post_is_private,
+                post_likes='0')
     print(post)
     db.session.add(post)
     db.session.commit()
@@ -234,10 +235,16 @@ def post_content():
         comment_list = Comment.query.filter_by(post_id=post_id).all()
         # print('ㄱㄴㄷㄹ',comment_list)
         return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
+    
+@app.route('/plus_post_likes', methods=['GET'])
+def plus_likes():
+    post_id = request.args.get('post_id')
+    post = Post.query.filter_by(post_id=post_id).first()
+    post.post_likes += 1
+    db.session.commit()
+    return redirect("/post_content?post_id=1")
 
 # 댓글 삭제
-
-
 @app.route('/delete_comment', methods=['GET'])
 def delete_comment():
     comment_id = request.args.get('comment_id')
@@ -294,6 +301,13 @@ def post_delete():
     db.session.delete(post)
     db.session.commit()
     return render_template("message.html", message="게시글을 삭제하였습니다.", return_url="/post_list")
+
+@app.route('/plus_post_likes', methods=["GET"])
+def plus_post_likes():
+    post_id = request.form.get('post_id')
+    post = Post.query.filter_by(post_id = post_id).first()
+    post.post_likes += 1
+    db.session.commit()
 
 
 # 게시글 목록의 시간 형식 정하기

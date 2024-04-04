@@ -174,12 +174,17 @@
             <p>{{post.post_content}}</p>
         </div>
         <div id="editDeleteButtons">
+            <div id="number_of_likes">추천수 : {{post.post_likes}}</div>
 
             <!-- 회원만 보이게 -->
             {% if (member and member.member_login_id == post.member_id) or (member and member.member_role == 'admin') %}
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
             <button onclick="fn_post_delete('{{ post.post_id }}')">삭제</button>
             {% endif %}
+            <div class="button_component" style="position:relative">
+                <!-- <button style="background-color: black;">&#10084;</button> -->
+                <button onclick="plus_post_likes('{{ post.post_id }}')" style="background-color: black; color:red; position:relative;">&#10084;</button>
+            </div>
         </div>
 
         <div id="commentSection">
@@ -187,7 +192,7 @@
             <!-- 기존 댓글 -->
             <ul id="commentList">
                 {% for comment in comment_list %}
-                
+
                 <!-- 비밀글이 아닐 경우 -->
                 <li>
                     {% if (not comment.is_secret) or (member and member.member_id == comment.member_id) or
@@ -248,6 +253,15 @@
             }
             function fn_post_delete(post_id) {
                 location.href = "/post_delete?post_id=" + post_id;
+            }
+            function plus_post_likes(post_id) {
+                $.ajax({
+                    url:'/plus_post_likes',
+                    type:'GET',
+                    data:{post_id:post_id}
+                }).then(() => {
+                    location.reload()
+                })
             }
         </script>
     </div>
