@@ -59,7 +59,7 @@ class Post(db.Model):
     post_is_private = db.Column(db.Boolean, default=False)
     # 등록일
     post_registration_date = db.Column(
-        db.DateTime, default=datetime.now(korea_timezone))
+        db.DateTime)
 
     def __repr__(self):
         return (f'{self.post_id} | {self.member_id} | {self.post_title} | {self.post_content} '
@@ -192,7 +192,7 @@ def post_add():
     post_content = request.form['post_content']
 
     post = Post(member_id=member_id, post_title=post_title,
-                post_content=post_content)
+                post_content=post_content, post_registration_date=datetime.now(korea_timezone))
     print(post)
     db.session.add(post)
     db.session.commit()
