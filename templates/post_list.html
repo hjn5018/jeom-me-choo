@@ -87,7 +87,12 @@
                     {% for element in post_list %}
                         <tr>
                             <td>{{ loop.revindex }}</td>
+                            {% if element.post_is_private and not element.member_id == member.member_login_id and not member.member_role == 'admin' %}
+                            <td>비밀글입니다.</td>
+                            
+                            {% else %}
                             <td><a href="/post_content?post_id={{ element.post_id }}">{{ element.post_title }}</a></td>
+                            {% endif %}
                             <td>0</td>
                             <td>{{ element.post_registration_date | strftime }}</td>
                         </tr>

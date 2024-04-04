@@ -56,7 +56,7 @@ class Post(db.Model):
     # 좋아요 수
     post_likes = db.Column(db.Integer, nullable=False, default=0)
     # 비밀글 여부
-    post_is_private = db.Column(db.Boolean, default=False)
+    post_is_private = db.Column(db.Integer, default='0')
     # 등록일
     post_registration_date = db.Column(
         db.DateTime)
@@ -154,6 +154,7 @@ def member_login():
             "member_login_id": member.first().member_login_id,
             "member_name": member.first().member_name,
             "member_nickname": member.first().member_nickname,
+            "member_role": member.first().member_role,
             "member_profile": member.first().member_profile
         }
         return render_template("message.html", message=f"{member.first().member_name}님으로 로그인 했습니다.", return_url=prev_url)
@@ -190,9 +191,11 @@ def post_add():
     member_id = request.form['member_login_id']
     post_title = request.form['post_title']
     post_content = request.form['post_content']
+    post_is_private = request.form.get('post_is_private','0')
 
     post = Post(member_id=member_id, post_title=post_title,
-                post_content=post_content, post_registration_date=datetime.now(korea_timezone))
+                post_content=post_content, post_registration_date=datetime.now(korea_timezone),
+                post_is_private=post_is_private)
     print(post)
     db.session.add(post)
     db.session.commit()
@@ -270,7 +273,7 @@ def post_update():
         post_id = request.form['post_id']
         post_title = request.form['post_title']
         post_content = request.form['post_content']
-        post_is_private = request.form.get('post_is_private', False)
+        post_is_private = request.form.get('post_is_private', '0')
         post = Post.query.filter_by(post_id=post_id).first()
         post.post_title = post_title
         post.post_content = post_content
