@@ -8,7 +8,9 @@
 - 류종현 : 댓글 CRUD
 
 ## jeam-me-choo 사용 시 static/에서 upload폴더 생성이 필요합니다.
-
++ 추가 기능)
+  조회수, 비밀글, 비밀댓글, 프로필 사진 ...
 ---
+
 ![rice](https://github.com/hjn5018/jeom-me-choo/assets/75594057/36b4e7d4-fb15-4cd4-927a-bf2d36ad6336)
 
