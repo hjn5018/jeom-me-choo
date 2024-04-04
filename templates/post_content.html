@@ -178,7 +178,7 @@
             <!-- 회원만 보이게 -->
             {% if member %}
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
-            <button onclick="deletePost()">삭제</button>
+            <button onclick="fn_post_delete('{{ post.post_id }}')">삭제</button>
             {% endif %}
         </div>
 
@@ -238,7 +238,9 @@
             function fn_post_update(post_id) {
                 location.href = "/post_update?post_id=" + post_id;
             }
-
+            function fn_post_delete(post_id) {
+                location.href = "/post_delete?post_id=" + post_id;
+            }
         </script>
 </body>
 
