@@ -75,8 +75,7 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey(
         'post.post_id'), nullable=False)
     # member_id
-    member_id = db.Column(db.Integer, db.ForeignKey(
-        'member.member_id'), nullable=False)
+    member_id = db.Column(db.Integer, nullable=False)
     # 댓글 내용
     comment_body = db.Column(db.String(), nullable=False)
     # 비밀 여부
@@ -151,6 +150,7 @@ def member_login():
     prev_url = request.form.get('prev_url', '/')
     if member.count():
         session["member"] = {
+            "member_id": member.first().member_id,
             "member_login_id": member.first().member_login_id,
             "member_name": member.first().member_name,
             "member_nickname": member.first().member_nickname,
@@ -215,6 +215,7 @@ def post_content():
                           member_id=member_id,
                           comment_body=comment_body_receive,
                           is_secret=is_secret_receive, comment_date=datetime.now(korea_timezone))
+        print('BCD', comment)
         db.session.add(comment)
         db.session.commit()
         comment_list = Comment.query.all()
