@@ -28,7 +28,7 @@
 
     <!-- 로그인 modal -->
     <form id="frm_login" action="{{ url_for('member_login') }}" method="post">
-        <input type="hidden" value="{{ request.path }}" name="prev_url">
+        <input type="hidden" value="{{ request.full_path }}" name="prev_url">
         <div class="modal fade" tabindex="-1" role="dialog" id="modalLogin">
             <div class="modal-dialog" role="document">
                 <div class="modal-content rounded-4 shadow" style="color:black">
