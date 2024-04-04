@@ -174,7 +174,7 @@
             <p>{{post.post_content}}</p>
         </div>
         <div id="editDeleteButtons">
-            
+
             <!-- 회원만 보이게 -->
             {% if member %}
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
@@ -191,8 +191,8 @@
                     <div class="comment-actions">
                         <!-- 회원만 보이게 -->
                         {% if member %}
-                        <span class="comment-action" onclick="editComment()">수정</span>
-                        <span class="comment-action" onclick="deleteComment()">삭제</span>
+                        <span class="comment-action" onclick="editComment('{{ comment.comment_id }}')">수정</span>
+                        <span class="comment-action" onclick="deleteComment('{{ comment.comment_id }}')">삭제</span>
                         {% endif %}
                     </div>
                 </li>
@@ -201,36 +201,45 @@
                 {% endfor %}
             </ul>
 
-        <form action="{{ url_for('post_content') }}" method="post" class="w-100">
-            <input type="hidden" name="post_id" value="{{post.post_id}}">
-            <input type="hidden" name="member_id" value="{{member.member_id}}">
-            <!-- 회원만 보이게 -->
-            {% if member %}
-            <div class="comment-form">
-                <textarea id="commentInput" placeholder="댓글을 입력하세요..." name="comment_body"></textarea>
-                <div class="comment-secret">
-                    <input type="checkbox" id="is_secret_comment" class="is_secret_comment" value="1" name="is_secret">
-                    <label for="is_secret_comment">비밀 댓글</label>
+            <form action="{{ url_for('post_content') }}" method="post" class="w-100">
+                <input type="hidden" name="post_id" value="{{post.post_id}}">
+                <input type="hidden" name="member_id" value="{{member.member_id}}">
+                <!-- 회원만 보이게 -->
+                {% if member %}
+                <div class="comment-form">
+                    <textarea id="commentInput" placeholder="댓글을 입력하세요..." name="comment_body"></textarea>
+                    <div class="comment-secret">
+                        <input type="checkbox" id="is_secret_comment" class="is_secret_comment" value="1"
+                            name="is_secret">
+                        <label for="is_secret_comment">비밀 댓글</label>
+                    </div>
+                    <button>댓글 등록</button>
                 </div>
-                <button>댓글 등록</button>
-            </div>
-            {% endif %}
-        </form>
+                {% endif %}
+            </form>
         </div>
 
-    <script>
-    function editComment() {
-        alert("댓글 수정 기능이 여기에 구현됩니다.");
-    }
+        <script>
+            function editComment(comment_id) {
+                location.href = "/comment_update?comment_id=" + comment_id
+            }
 
-    function deleteComment() {
-        alert("댓글 삭제 기능이 여기에 구현됩니다.");
-    }
-    // 게시글 수정 페이지로 이동
-    function fn_post_update(post_id) {
-            location.href = "/post_update?post_id="+post_id;
-        }
-    </script>
+            function deleteComment(comment_id) {
+                $.ajax({
+                    url: '/delete_comment',
+                    type: 'GET',
+                    data: { comment_id: comment_id }
+                }).then(() => {
+                    location.reload()
+                })
+            }
+            
+            // 게시글 수정 페이지로 이동
+            function fn_post_update(post_id) {
+                location.href = "/post_update?post_id=" + post_id;
+            }
+
+        </script>
 </body>
 
 </html>
