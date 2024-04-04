@@ -176,7 +176,7 @@
         <div id="editDeleteButtons">
 
             <!-- 회원만 보이게 -->
-            {% if member %}
+            {% if member and member.member_login_id == post.member_id %} 
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
             <button onclick="deletePost()">삭제</button>
             {% endif %}
@@ -190,7 +190,7 @@
                 <li>{{ comment.comment_body }}
                     <div class="comment-actions">
                         <!-- 회원만 보이게 -->
-                        {% if member %}
+                        {% if member and member.member_id == comment.member_id %} 
                         <span class="comment-action" onclick="editComment('{{ comment.comment_id }}')">수정</span>
                         <span class="comment-action" onclick="deleteComment('{{ comment.comment_id }}')">삭제</span>
                         {% endif %}
