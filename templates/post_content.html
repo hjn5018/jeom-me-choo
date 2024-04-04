@@ -174,8 +174,12 @@
             <p>{{post.post_content}}</p>
         </div>
         <div id="editDeleteButtons">
+            
+            <!-- 회원만 보이게 -->
+            {% if member %}
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
             <button onclick="deletePost()">삭제</button>
+            {% endif %}
         </div>
 
         <div id="commentSection">
@@ -185,8 +189,11 @@
                 {% for comment in comment_list %}
                 <li>{{ comment.comment_body }}
                     <div class="comment-actions">
+                        <!-- 회원만 보이게 -->
+                        {% if member %}
                         <span class="comment-action" onclick="editComment()">수정</span>
                         <span class="comment-action" onclick="deleteComment()">삭제</span>
+                        {% endif %}
                     </div>
                 </li>
                 <li>{{ comment.comment_date.strftime('%Y-%m-%d %I:%M:%S %p') }}
@@ -196,6 +203,9 @@
 
         <form action="{{ url_for('post_content') }}" method="post" class="w-100">
             <input type="hidden" name="post_id" value="{{post.post_id}}">
+            <input type="hidden" name="member_id" value="{{member.member_id}}">
+            <!-- 회원만 보이게 -->
+            {% if member %}
             <div class="comment-form">
                 <textarea id="commentInput" placeholder="댓글을 입력하세요..." name="comment_body"></textarea>
                 <div class="comment-secret">
@@ -204,6 +214,7 @@
                 </div>
                 <button>댓글 등록</button>
             </div>
+            {% endif %}
         </form>
         </div>
 
