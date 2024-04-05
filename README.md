@@ -15,7 +15,7 @@
   조회수, 비밀글, 비밀댓글, 프로필 사진 ...
 ---
 
-## 개발환경
-front-end : html, bootstrap, ajax, jquery
+## 개발 환경
+front-end : html, bootstrap, ajax, jquery <br>
 back-end : python, flask, sqlalchemy
 ![제목 없음](https://github.com/hjn5018/jeom-me-choo/assets/159862122/b5186007-98ef-40e5-8fe6-9480303d9db9)
