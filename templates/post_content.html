@@ -74,14 +74,6 @@
             margin-top: 80px;
         }
 
-        #commentList li {
-            background-color: #F9F9F9;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-        }
-
         #commentInput {
             width: 98%;
             /* Adjusted width */
@@ -111,19 +103,6 @@
             background-color: #0056B3;
         }
 
-        #commentList li {
-            position: relative;
-            /* Allows absolute positioning for the edit/delete text */
-            background-color: #F9F9F9;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            /* Ensures space between comment text and actions */
-            align-items: center;
-        }
 
         .comment-actions {
             display: flex;
@@ -151,6 +130,25 @@
             align-self: flex-end;
             margin-bottom: -15px;
             /* 비밀 댓글 체크박스와 라벨을 댓글 입력 필드 위로 조정 */
+        }
+
+        .like_button_component {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* .heart_back {
+            position: absolute;
+            color: red;
+        } */
+
+        .heart_front {
+            color: white;
+            transition: all .5s ease;
+        }
+
+        .like_button_component:hover .heart_front {
+            color: red;
         }
         #commentList li {
     display: flex;
@@ -204,12 +202,18 @@
             <p>{{post.post_content}}</p>
         </div>
         <div id="editDeleteButtons">
+            <div id="number_of_likes">추천수 : {{post.post_likes}}</div>
 
             <!-- 회원만 보이게 -->
             {% if (member and member.member_login_id == post.member_id) or (member and member.member_role == 'admin') %}
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
             <button onclick="fn_post_delete('{{ post.post_id }}')">삭제</button>
             {% endif %}
+            <div class="like_button_component">
+                <!-- <button class="heart_back" style="background-color: black;">&#10084;</button> -->
+                <button class="heart_front" onclick="plus_post_likes('{{ post.post_id }}')"
+                    style="background-color: black; position:relative;">&#10084;</button>
+            </div>
         </div>
 
         <div id="commentSection">
@@ -278,6 +282,18 @@
             }
             function fn_post_delete(post_id) {
                 location.href = "/post_delete?post_id=" + post_id;
+            }
+            function plus_post_likes(post_id) {
+                $.ajax({
+                    url: '/plus_post_likes',
+                    type: 'GET',
+                    data: { post_id: post_id },
+                    success: function (response) {
+                        // 서버에서 증가된 좋아요 수를 받아와서 업데이트
+                        new_likes = response.new_likes;
+                        $("#number_of_likes").text("추천수 : " + new_likes);
+                    }
+                })
             }
         </script>
     </div>
