@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<body style="display: none;">
+    <div id="message">{{ message }}</div>
+    <div id="return_url">{{ return_url }}</div>
+</body>
+<script>
+    // 알림 메세지 후 페이지 이동 함수
+    $(function () {
+        // 알림 메세지
+        alert($("#message").text());
+        // 페이지 이동
+        location.href = $("#return_url").text();
+    })
+</script>
+</html>
