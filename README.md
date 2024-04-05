@@ -1,3 +1,4 @@
+<img src="https://github.com/hjn5018/jeom-me-choo/assets/75594057/36b4e7d4-fb15-4cd4-927a-bf2d36ad6336" width="200px" height="200px">
 # jeom-me-choo
 **점심메뉴추천 사이트**
 2024.04.01 - 2024.04.05 (5 days)
@@ -12,6 +13,4 @@
   조회수, 비밀글, 비밀댓글, 프로필 사진 ...
 ---
 
-![rice](https://github.com/hjn5018/jeom-me-choo/assets/75594057/36b4e7d4-fb15-4cd4-927a-bf2d36ad6336)
 
-<img src="https://github.com/hjn5018/jeom-me-choo/assets/75594057/36b4e7d4-fb15-4cd4-927a-bf2d36ad6336" width="100px" height="100px">
