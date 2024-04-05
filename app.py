@@ -236,13 +236,14 @@ def post_content():
         # print('ㄱㄴㄷㄹ',comment_list)
         return render_template("post_content.html", member=session.get("member"), post=post, comment_list=comment_list)
     
+# 좋아요 기능
 @app.route('/plus_post_likes', methods=['GET'])
 def plus_likes():
     post_id = request.args.get('post_id')
     post = Post.query.filter_by(post_id=post_id).first()
     post.post_likes += 1
     db.session.commit()
-    return redirect("/post_content?post_id=1")
+    return jsonify({'new_likes': post.post_likes})
 
 # 댓글 삭제
 @app.route('/delete_comment', methods=['GET'])
@@ -301,14 +302,6 @@ def post_delete():
     db.session.delete(post)
     db.session.commit()
     return render_template("message.html", message="게시글을 삭제하였습니다.", return_url="/post_list")
-
-@app.route('/plus_post_likes', methods=["GET"])
-def plus_post_likes():
-    post_id = request.form.get('post_id')
-    post = Post.query.filter_by(post_id = post_id).first()
-    post.post_likes += 1
-    db.session.commit()
-
 
 # 게시글 목록의 시간 형식 정하기
 @app.template_filter('strftime')

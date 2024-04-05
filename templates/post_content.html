@@ -152,6 +152,25 @@
             margin-bottom: -15px;
             /* 비밀 댓글 체크박스와 라벨을 댓글 입력 필드 위로 조정 */
         }
+
+        .like_button_component {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* .heart_back {
+            position: absolute;
+            color: red;
+        } */
+
+        .heart_front {
+            color: white;
+            transition: all .5s ease;
+        }
+
+        .like_button_component:hover .heart_front {
+            color: red;
+        }
     </style>
 </head>
 
@@ -181,9 +200,10 @@
             <button onclick="fn_post_update('{{ post.post_id }}')">수정</button>
             <button onclick="fn_post_delete('{{ post.post_id }}')">삭제</button>
             {% endif %}
-            <div class="button_component" style="position:relative">
-                <!-- <button style="background-color: black;">&#10084;</button> -->
-                <button onclick="plus_post_likes('{{ post.post_id }}')" style="background-color: black; color:red; position:relative;">&#10084;</button>
+            <div class="like_button_component">
+                <!-- <button class="heart_back" style="background-color: black;">&#10084;</button> -->
+                <button class="heart_front" onclick="plus_post_likes('{{ post.post_id }}')"
+                    style="background-color: black; position:relative;">&#10084;</button>
             </div>
         </div>
 
@@ -256,11 +276,14 @@
             }
             function plus_post_likes(post_id) {
                 $.ajax({
-                    url:'/plus_post_likes',
-                    type:'GET',
-                    data:{post_id:post_id}
-                }).then(() => {
-                    location.reload()
+                    url: '/plus_post_likes',
+                    type: 'GET',
+                    data: { post_id: post_id },
+                    success: function (response) {
+                        // 서버에서 증가된 좋아요 수를 받아와서 업데이트
+                        new_likes = response.new_likes;
+                        $("#number_of_likes").text("추천수 : " + new_likes);
+                    }
                 })
             }
         </script>
