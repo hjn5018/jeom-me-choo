@@ -70,8 +70,8 @@
         #commentList {
             list-style-type: none;
             padding: 0;
-            width: 100%;
-            margin-top: 20px;
+            width: 98%;
+            margin-top: 80px;
         }
 
         #commentList li {
@@ -152,6 +152,36 @@
             margin-bottom: -15px;
             /* 비밀 댓글 체크박스와 라벨을 댓글 입력 필드 위로 조정 */
         }
+        #commentList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F9F9F9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.comment-body {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-date {
+    margin-left: 10px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 5px;
+    margin-left: 10px;
+}
+
     </style>
 </head>
 
@@ -184,30 +214,30 @@
 
         <div id="commentSection">
 
-            <!-- 기존 댓글 -->
-            <ul id="commentList">
-                {% for comment in comment_list %}
-                
-                <!-- 비밀글이 아닐 경우 -->
-                <li>
-                    {% if (not comment.is_secret) or (member and member.member_id == comment.member_id) or
-                    (member.member_role == 'admin') or (post.member_id == member.member_login_id) %}
-                    {{ comment.comment_body }}
-                    {% else %}
-                    비밀댓글입니다.
-                    {% endif %}
-                    <div class="comment-actions">
-                        <!-- 회원만 보이게 -->
-                        {% if (member and member.member_id == comment.member_id) or member.member_role == 'admin' %}
-                        <span class="comment-action" onclick="editComment('{{ comment.comment_id }}')">수정</span>
-                        <span class="comment-action" onclick="deleteComment('{{ comment.comment_id }}')">삭제</span>
-                        {% endif %}
-                    </div>
-                </li>
-                <li>{{ comment.comment_date.strftime('%Y-%m-%d %I:%M:%S %p') }}
-                </li>
-                {% endfor %}
-            </ul>
+ <!-- 기존 댓글 -->
+<ul id="commentList">
+    {% for comment in comment_list %}
+    <li>
+        <div class="comment-body">
+            {% if not comment.is_secret or (member and member.member_id == comment.member_id) or
+            (member.member_role == 'admin') or (post.member_id == member.member_login_id) %}
+            {{ comment.comment_body }}
+            <span class="comment-date">{{ comment.comment_date.strftime('%Y-%m-%d %I:%M:%S %p') }}</span>
+            {% else %}
+            비밀댓글입니다.
+            {% endif %}
+        </div>
+        <div class="comment-actions">
+            <!-- 회원만 보이게 -->
+            {% if (member and member.member_id == comment.member_id) or (member.member_role == 'admin') %}
+            <span class="comment-action" onclick="editComment('{{ comment.comment_id }}')">수정</span>
+            <span class="comment-action" onclick="deleteComment('{{ comment.comment_id }}')">삭제</span>
+            {% endif %}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
 
             <form action="{{ url_for('post_content') }}" method="post" class="w-100">
                 <input type="hidden" name="post_id" value="{{post.post_id}}">
