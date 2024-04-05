@@ -10,10 +10,6 @@
 - 한진용 : 게시글 CRUD (팀장)
 - 류종현 : 댓글 CRUD, 추천 기능, 푸터
 
-## jeam-me-choo 사용 시 static/에서 upload폴더 생성이 필요합니다.
-+ 추가 기능)
-  조회수, 비밀글, 비밀댓글, 프로필 사진 ...
----
 
 ## 개발 환경
 front-end : html, bootstrap, ajax, jquery <br>
