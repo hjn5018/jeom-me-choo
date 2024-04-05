@@ -19,3 +19,14 @@
 front-end : html, bootstrap, ajax, jquery <br>
 back-end : python, flask, sqlalchemy
 ![제목 없음](https://github.com/hjn5018/jeom-me-choo/assets/159862122/b5186007-98ef-40e5-8fe6-9480303d9db9)
+
+## 와이어프레임
+![점 메 추  와이어프레임](https://github.com/hjn5018/jeom-me-choo/assets/159862122/a9653574-2aaa-4456-a3ac-7bd1a9455264)
+
+
+## 스키마
+![스키마](https://github.com/hjn5018/jeom-me-choo/assets/159862122/5ed3e1a4-66c0-4b6b-9345-33e4df723c0e)
+
+## API
+![API](https://github.com/hjn5018/jeom-me-choo/assets/159862122/403ef611-d9f0-4a06-870a-2c4e0683f343)
+
