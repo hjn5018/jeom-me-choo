@@ -12,5 +12,5 @@
   조회수, 비밀글, 비밀댓글, 프로필 사진 ...
 ---
 
-![rice](https://github.com/hjn5018/jeom-me-choo/assets/75594057/36b4e7d4-fb15-4cd4-927a-bf2d36ad6336)
+![rice](https://github.com/hjn5018/jeom-me-choo/assets/75594057/36b4e7d4-fb15-4cd4-927a-bf2d36ad6336){: width="100" height="100"}
 
